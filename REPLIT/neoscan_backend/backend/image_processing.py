@@ -28,7 +28,21 @@ def load_image(path):
 
 
 def preprocess(image):
-    return cv2.GaussianBlur(image, (5, 5), 0)
+    # Resize image to manageable size
+    max_size = 512
+
+    height, width = image.shape[:2]
+
+    if max(height, width) > max_size:
+        scale = max_size / max(height, width)
+        new_width = int(width * scale)
+        new_height = int(height * scale)
+        image = cv2.resize(image, (new_width, new_height))
+
+    # Apply blur after resizing
+    image = cv2.GaussianBlur(image, (5, 5), 0)
+
+    return image
 
 
 # -----------------------------------------------------
@@ -110,7 +124,32 @@ def extract_features(image):
     }
 
     return features
+# -----------------------------------------------------
+# Flask Callable Pipeline Function
+# -----------------------------------------------------
 
+def process_pipeline(white_img, eye_img):
+    """
+    Full calibration + feature extraction pipeline
+    For Flask usage.
+    """
+
+    white_img = preprocess(white_img)
+    eye_img = preprocess(eye_img)
+
+    white_mean_rgb = compute_white_reference(white_img)
+
+    calibrated_eye = apply_white_balance(eye_img, white_mean_rgb)
+
+    features = extract_features(calibrated_eye)
+
+    # Convert dictionary to ML-ready feature vector
+    feature_vector = np.array(list(features.values())).reshape(1, -1)
+
+    return {
+        "features": features,
+        "feature_vector": feature_vector.tolist()
+    }
 
 # -----------------------------------------------------
 # Main Pipeline

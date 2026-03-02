@@ -98,8 +98,8 @@ export function useRegister() {
       localStorage.setItem("neoscan_token", data.token);
       localStorage.setItem("neoscan_user", JSON.stringify(data.user));
 
-      // Quick demo → go dashboard directly
-      setLocation("/dashboard");
+      // Quick demo → go setup directly to force baby details
+      setLocation("/setup");
     },
   });
 }

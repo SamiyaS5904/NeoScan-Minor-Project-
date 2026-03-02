@@ -19,8 +19,8 @@ export function Navbar() {
   const navLinks = isAuthenticated
     ? [
       { name: "Dashboard", href: "/dashboard" },
-      { name: "Calibrate", href: "/calibrate" },
-      { name: "New Scan", href: "/scan" },
+      { name: "Neonatal Jaundice", href: "/jaundice-info" },
+      { name: "Research", href: "/research" },
     ]
     : [
       { name: "Home", href: "/" },

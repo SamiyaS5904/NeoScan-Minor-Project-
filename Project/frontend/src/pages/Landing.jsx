@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import babyimage from "../assets/baby-image.jpg"
+import babyimage from "../assets/babyimage.jpg"
 import {
   ShieldCheck,
   Smartphone,

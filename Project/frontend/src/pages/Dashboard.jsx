@@ -14,6 +14,7 @@ import {
 import { format } from "date-fns";
 import { buildUrl } from "@shared/routes";
 import { useQuery } from "@tanstack/react-query";
+import { useEffect } from "react";
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -42,8 +43,13 @@ export default function Dashboard() {
     }))
     .reverse() || [];
 
+  useEffect(() => {
+    if (!isLoading && (!baby || !baby.name)) {
+      setLocation("/setup");
+    }
+  }, [isLoading, baby, setLocation]);
+
   if (!isLoading && (!baby || !baby.name)) {
-    setLocation("/setup");
     return null;
   }
 
@@ -52,10 +58,10 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-end mb-10 gap-4">
         <div>
           <h1 className="text-4xl font-display font-bold text-foreground">
-            Welcome, {user.motherName || user.name}
+            Welcome, {user.name}
           </h1>
           <p className="text-muted-foreground mt-1 text-lg">
-            Health analytics for {baby?.name}
+            Health analytics for your baby
           </p>
         </div>
 
@@ -135,21 +141,21 @@ export default function Dashboard() {
                 ) : (
                   <div className="flex flex-col items-center gap-6 w-full">
                     <div className="text-center w-full">
-                      <p className="text-sm font-mono text-[hsl(var(--primary))] bg-black/5 p-4 rounded-2xl break-all leading-relaxed shadow-inner">
-                        [{latestScan.featureVector && latestScan.featureVector.length >= 3
+                      <p className="text-sm font-mono text-[hsl(var(--primary))] bg-black/5 p-4 rounded-2xl break-all leading-relaxed shadow-inner mb-6">
+                        RGB Values: [{latestScan.featureVector && latestScan.featureVector.length >= 3
                           ? latestScan.featureVector.slice(0, 3).map((v) => Number(v).toFixed(2)).join(", ")
-                          : "Awaiting valid calibration"}]
+                          : "X, Y, Z"}]
                       </p>
-                      <p className="text-xs text-muted-foreground uppercase font-bold mt-4 tracking-wide">
-                        RGB Values (This will be given as an input to the ML model which will later on calculate the bilirubin number)
-                      </p>
+                      <div className="p-6 bg-[hsl(var(--primary))/10] rounded-2xl flex flex-col items-center text-center">
+                        <span className="text-lg font-bold text-[hsl(var(--primary))]">Bilirubin values will be available soon</span>
+                      </div>
                     </div>
                   </div>
                 )}
               </div>
             ) : (
               <p className="text-muted-foreground text-center py-8">
-                No scans recorded yet.
+                XYZ
               </p>
             )}
 

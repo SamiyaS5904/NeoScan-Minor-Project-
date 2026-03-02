@@ -1,4 +1,4 @@
-import { useRef, useEffect } from "react";
+import { useRef, useEffect, useState } from "react";
 import { Camera, RefreshCw, AlertCircle, UploadCloud } from "lucide-react";
 import { useCamera } from "@/hooks/use-camera";
 import { motion, AnimatePresence } from "framer-motion";
@@ -13,16 +13,23 @@ interface CameraCaptureProps {
 export function CameraCapture({ onCapture, title, description, isPending }: CameraCaptureProps) {
   const { videoRef, canvasRef, error, isReady, startCamera, captureImage } = useCamera();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [flash, setFlash] = useState(false);
 
   useEffect(() => {
     startCamera();
   }, [startCamera]);
 
   const handleCapture = () => {
-    const image = captureImage();
-    if (image) {
-      onCapture(image);
-    }
+    setFlash(true);
+    setTimeout(() => setFlash(false), 300); // Remove flash after 300ms
+
+    // Slight delay to allow flash animation to start before heavy image processing
+    setTimeout(() => {
+      const image = captureImage();
+      if (image) {
+        onCapture(image);
+      }
+    }, 50);
   };
 
   const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -65,6 +72,19 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
                 <div className="w-2 h-2 bg-white rounded-full"></div>
               </div>
             </div>
+
+            {/* Flash Effect Overlay */}
+            <AnimatePresence>
+              {flash && (
+                <motion.div
+                  initial={{ opacity: 1 }}
+                  animate={{ opacity: 0 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.3 }}
+                  className="absolute inset-0 bg-white z-50 pointer-events-none"
+                />
+              )}
+            </AnimatePresence>
           </>
         )}
         <canvas ref={canvasRef} className="hidden" />
@@ -117,7 +137,6 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
 
         <button
           onClick={() => fileInputRef.current?.click()}
-          disabled={isPending}
           className="
             flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
             bg-white border-2 border-[hsl(var(--primary))/20]

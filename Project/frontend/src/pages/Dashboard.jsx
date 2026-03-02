@@ -3,9 +3,6 @@ import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import {
   Plus,
-  AlertCircle,
-  CheckCircle2,
-  AlertTriangle,
   Loader2,
   Baby,
 } from "lucide-react";
@@ -15,59 +12,8 @@ import {
   ResponsiveContainer,
 } from "recharts";
 import { format } from "date-fns";
-import { api } from "@shared/routes";
+import { buildUrl } from "@shared/routes";
 import { useQuery } from "@tanstack/react-query";
-
-const getRiskColor = (level) => {
-  switch (level?.toLowerCase()) {
-    case "safe":
-      return "text-[hsl(var(--risk-safe))]";
-    case "moderate":
-      return "text-[hsl(var(--risk-moderate))]";
-    case "high":
-      return "text-[hsl(var(--risk-high))]";
-    default:
-      return "text-muted-foreground";
-  }
-};
-
-const getRiskBg = (level) => {
-  switch (level?.toLowerCase()) {
-    case "safe":
-      return "bg-[hsl(var(--risk-safe))/10]";
-    case "moderate":
-      return "bg-[hsl(var(--risk-moderate))/10]";
-    case "high":
-      return "bg-[hsl(var(--risk-high))/10]";
-    default:
-      return "bg-black/5";
-  }
-};
-
-const getRiskIcon = (level) => {
-  switch (level?.toLowerCase()) {
-    case "safe":
-      return (
-        <CheckCircle2
-          className={`w-8 h-8 ${getRiskColor(level)}`}
-        />
-      );
-    case "moderate":
-      return (
-        <AlertTriangle
-          className={`w-8 h-8 ${getRiskColor(level)}`}
-        />
-      );
-    case "high":
-      return (
-        <AlertCircle
-          className={`w-8 h-8 ${getRiskColor(level)}`}
-        />
-      );
-    default:
-      return null;
-  }
-};
 
 export default function Dashboard() {
   const [, setLocation] = useLocation();
@@ -75,36 +21,29 @@ export default function Dashboard() {
 
   const { data: baby, isLoading: babyLoading } = useQuery({
     queryKey: ["baby"],
-queryFn: async () => {
-  const res = await fetch("http://localhost:5000/api/baby");
-      if (!res.ok) throw new Error("Failed to fetch baby profile");
+    queryFn: async () => {
+      const res = await fetch(buildUrl("/baby"));
+      // if (!res.ok) throw new Error("Failed to fetch baby profile");
+      if (!res.ok) return null;
       return res.json();
     },
   });
 
-
-
   const { data: history, isLoading: historyLoading } = useScanHistory();
   const isLoading = babyLoading || historyLoading;
 
-  const latestScan =
-    history && history.length > 0 ? history[0] : null;
+  const latestScan = history && history.length > 0 ? history[0] : null;
 
-  const chartData =
-    history
-      ?.filter(
-        (h) =>
-          h.status === "complete" &&
-          h.bilirubinValue !== null
-      )
-      .map((h) => ({
-        date: format(new Date(h.createdAt), "MMM dd"),
-        value: h.bilirubinValue,
-      }))
-      .reverse() || [];
+  const chartData = history
+    ?.filter((h) => h.status === "complete" && h.bilirubinValue !== null)
+    .map((h) => ({
+      date: format(new Date(h.createdAt), "MMM dd"),
+      value: h.bilirubinValue,
+    }))
+    .reverse() || [];
 
   if (!isLoading && !baby) {
-    setLocation("/baby-setup");
+    setLocation("/setup");
     return null;
   }
 
@@ -134,7 +73,6 @@ queryFn: async () => {
         </div>
       ) : (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
           {/* Baby Summary */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -195,44 +133,18 @@ queryFn: async () => {
                     <p className="font-bold">Analyzing...</p>
                   </div>
                 ) : (
-                  <>
-                    <div className="flex items-center gap-6 mb-4">
-                      <div className="text-center">
-                        <p className="text-4xl font-display font-bold text-foreground">
-                          {latestScan.bilirubinValue}
-                        </p>
-                        <p className="text-xs text-muted-foreground uppercase font-bold">
-                          mg/dL
-                        </p>
-                      </div>
-
-                      <div className="h-12 w-px bg-border" />
-
-                      <div className="text-center">
-                        <p className="text-2xl font-bold text-foreground">
-                          {latestScan.confidence}%
-                        </p>
-                        <p className="text-xs text-muted-foreground uppercase font-bold">
-                          Confidence
-                        </p>
-                      </div>
+                  <div className="flex flex-col items-center gap-6 w-full">
+                    <div className="text-center w-full">
+                      <p className="text-sm font-mono text-[hsl(var(--primary))] bg-black/5 p-4 rounded-2xl break-all leading-relaxed shadow-inner">
+                        [{latestScan.featureVector && latestScan.featureVector.length >= 3
+                          ? latestScan.featureVector.slice(0, 3).map((v) => Number(v).toFixed(2)).join(", ")
+                          : "Awaiting valid calibration"}]
+                      </p>
+                      <p className="text-xs text-muted-foreground uppercase font-bold mt-4 tracking-wide">
+                        RGB Values (This will be given as an input to the ML model which will later on calculate the bilirubin number)
+                      </p>
                     </div>
-
-                    <div
-                      className={`px-4 py-2 rounded-full flex items-center gap-2 ${getRiskBg(
-                        latestScan.riskLevel
-                      )}`}
-                    >
-                      {getRiskIcon(latestScan.riskLevel)}
-                      <span
-                        className={`font-bold ${getRiskColor(
-                          latestScan.riskLevel
-                        )}`}
-                      >
-                        {latestScan.riskLevel} Risk
-                      </span>
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
             ) : (
@@ -242,12 +154,7 @@ queryFn: async () => {
             )}
 
             <div className="text-[10px] text-muted-foreground mt-4 text-center">
-              {latestScan?.createdAt
-                ? format(
-                    new Date(latestScan.createdAt),
-                    "PPP p"
-                  )
-                : ""}
+              {latestScan?.createdAt ? format(new Date(latestScan.createdAt), "PPP p") : ""}
             </div>
           </motion.div>
 
@@ -284,6 +191,37 @@ queryFn: async () => {
             </div>
           </motion.div>
 
+          {/* Home Remedies / Action Plan */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}
+            className="lg:col-span-3 glass p-8 rounded-3xl flex flex-col border-l-4 border-blue-400"
+          >
+            <h2 className="text-xl font-bold text-foreground mb-4 flex items-center gap-2">
+              <Baby className="w-6 h-6 text-blue-500" /> General Neonatal Care Guidelines
+            </h2>
+
+            {latestScan ? (
+              <div className="space-y-4">
+                <div className="bg-blue-50/50 text-slate-700 p-6 rounded-2xl flex gap-4">
+                  <div>
+                    <p className="text-sm leading-relaxed">
+                      While NeoScan evaluates these visual metrics for our research models, here are standard, healthy ways to ensure your baby is thriving:
+                    </p>
+                    <ul className="list-disc ml-5 mt-4 space-y-2 text-sm font-medium">
+                      <li>Ensure 8-12 feedings a day (breastmilk or formula) to help your baby flush out bilirubin naturally.</li>
+                      <li>Expose your baby to indirect early morning sunlight (filtered through a window) for 10-15 minutes.</li>
+                      <li>Keep track of wet and dirty diapers to verify they are properly hydrated.</li>
+                      <li>Always consult your pediatrician for regular clinical check-ups or if you observe yellowing of the skin/eyes spreading to the chest or legs.</li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            ) : (
+              <p className="text-sm text-muted-foreground">Complete a scan to see general care guidelines.</p>
+            )}
+          </motion.div>
         </div>
       )}
     </div>

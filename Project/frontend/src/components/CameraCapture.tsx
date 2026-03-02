@@ -1,5 +1,5 @@
-import { useEffect } from "react";
-import { Camera, RefreshCw, AlertCircle } from "lucide-react";
+import { useRef, useEffect } from "react";
+import { Camera, RefreshCw, AlertCircle, UploadCloud } from "lucide-react";
 import { useCamera } from "@/hooks/use-camera";
 import { motion, AnimatePresence } from "framer-motion";
 
@@ -12,6 +12,7 @@ interface CameraCaptureProps {
 
 export function CameraCapture({ onCapture, title, description, isPending }: CameraCaptureProps) {
   const { videoRef, canvasRef, error, isReady, startCamera, captureImage } = useCamera();
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     startCamera();
@@ -22,6 +23,18 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
     if (image) {
       onCapture(image);
     }
+  };
+
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      const base64String = reader.result as string;
+      onCapture(base64String);
+    };
+    reader.readAsDataURL(file);
   };
 
   return (
@@ -58,7 +71,7 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
 
         <AnimatePresence>
           {!isReady && !error && (
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
@@ -73,12 +86,12 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
         </AnimatePresence>
       </div>
 
-      <div className="mt-8 flex gap-4">
+      <div className="mt-8 flex flex-col sm:flex-row gap-4 w-full max-w-md">
         <button
           onClick={handleCapture}
           disabled={!isReady || isPending}
           className="
-            flex items-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
+            flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
             bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))/80]
             text-white shadow-lg shadow-[hsl(var(--primary))/25]
             hover:shadow-xl hover:-translate-y-1
@@ -92,6 +105,34 @@ export function CameraCapture({ onCapture, title, description, isPending }: Came
             <Camera className="w-6 h-6" />
           )}
           {isPending ? "Processing..." : "Capture Photo"}
+        </button>
+
+        <input
+          type="file"
+          accept="image/*"
+          ref={fileInputRef}
+          className="hidden"
+          onChange={handleFileUpload}
+        />
+
+        <button
+          onClick={() => fileInputRef.current?.click()}
+          disabled={isPending}
+          className="
+            flex-1 flex items-center justify-center gap-3 px-8 py-4 rounded-2xl font-bold text-lg
+            bg-white border-2 border-[hsl(var(--primary))/20]
+            text-[hsl(var(--primary))] shadow-sm
+            hover:shadow-md hover:border-[hsl(var(--primary))/40] hover:-translate-y-1
+            disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none
+            transition-all duration-300
+          "
+        >
+          {isPending ? (
+            <RefreshCw className="w-6 h-6 animate-spin" />
+          ) : (
+            <UploadCloud className="w-6 h-6" />
+          )}
+          Upload Gallery
         </button>
       </div>
     </div>

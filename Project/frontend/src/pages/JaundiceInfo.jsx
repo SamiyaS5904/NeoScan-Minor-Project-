@@ -156,10 +156,23 @@ export default function JaundiceInfo() {
           </ResponsiveContainer>
         </div>
 
-        <p className="text-muted-foreground mt-8 text-lg">
-          Non-invasive screening tools like NeoScan aim to bridge the gap in
-          accessible neonatal care.
-        </p>
+        <div className="mt-12 bg-white/50 border border-border rounded-2xl p-6 text-left max-w-2xl mx-auto">
+          <h3 className="font-bold text-xl mb-4">NeoScan AI Estimation Ranges</h3>
+          <ul className="space-y-3 text-muted-foreground">
+            <li className="flex items-center gap-3">
+              <span className="w-4 h-4 rounded-full bg-[hsl(var(--risk-safe))]"></span>
+              <strong>Safe:</strong> &lt; 7.0 mg/dL (Normal physiological levels)
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-4 h-4 rounded-full bg-[hsl(var(--risk-moderate))]"></span>
+              <strong>Moderate:</strong> 7.0 - 12.0 mg/dL (Requires close monitoring)
+            </li>
+            <li className="flex items-center gap-3">
+              <span className="w-4 h-4 rounded-full bg-[hsl(var(--risk-high))]"></span>
+              <strong>High Risk:</strong> &gt; 12.0 mg/dL (A medically concerning threshold requiring immediate action)
+            </li>
+          </ul>
+        </div>
       </section>
     </div>
   );

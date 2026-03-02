@@ -15,7 +15,7 @@ export default function Scan() {
   );
 
   useEffect(() => {
-    if (user.isCalibrated === 0) {
+    if (user.isCalibrated !== 1) {
       toast({
         title: "Calibration Required",
         description:

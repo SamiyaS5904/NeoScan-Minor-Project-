@@ -75,7 +75,7 @@ export default function Login() {
           <button
             type="submit"
             disabled={loginMutation.isPending}
-            className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))/80] shadow-lg shadow-[hsl(var(--primary))/25] hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:transform-none transition-all flex-center gap-2 mt-4"
+            className="w-full py-4 rounded-xl font-bold text-white bg-blue-600 shadow-lg hover:bg-blue-700 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:transform-none transition-all flex items-center justify-center gap-2 mt-4"
           >
             {loginMutation.isPending ? (
               <Loader2 className="w-5 h-5 animate-spin" />

@@ -124,6 +124,73 @@ def extract_features(image):
     }
 
     return features
+
+# -----------------------------------------------------
+# Sclera Segmentation
+# -----------------------------------------------------
+
+def segment_sclera(image):
+    """
+    Isolates the sclera (white of the eye) by masking out typical skin tones
+    and finding the largest remaining bright contour.
+    Returns the cropped sclera image.
+    """
+    # Image is calibrated_eye, which is RGB.
+    # Convert to YCrCb space for robust skin detection
+    ycrcb = cv2.cvtColor(image, cv2.COLOR_RGB2YCrCb)
+    
+    # Typical skin color bounds in YCrCb
+    # Lower bound focuses on keeping Y (luma) flexible but restricting Cr/Cb to skin tones
+    lower_skin = np.array([0, 133, 77], dtype=np.uint8)
+    upper_skin = np.array([255, 173, 127], dtype=np.uint8)
+    
+    # Create mask for skin
+    skin_mask = cv2.inRange(ycrcb, lower_skin, upper_skin)
+    
+    # Invert the mask: we want non-skin (the eye/sclera)
+    non_skin_mask = cv2.bitwise_not(skin_mask)
+    
+    # Additionally, the sclera is generally the brightest part of the eye
+    # Convert to grayscale and threshold to find bright regions
+    gray = cv2.cvtColor(image, cv2.COLOR_RGB2GRAY)
+    _, bright_mask = cv2.threshold(gray, 180, 255, cv2.THRESH_BINARY)
+    
+    # Combine the non-skin mask and the bright mask
+    combined_mask = cv2.bitwise_and(non_skin_mask, bright_mask)
+    
+    # Clean up the mask using morphological operations
+    kernel = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (5, 5))
+    cleaned_mask = cv2.morphologyEx(combined_mask, cv2.MORPH_OPEN, kernel)
+    cleaned_mask = cv2.morphologyEx(cleaned_mask, cv2.MORPH_CLOSE, kernel)
+    
+    # Find contours
+    contours, _ = cv2.findContours(cleaned_mask, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    
+    if not contours:
+        # Fallback if no sclera is found, return original image
+        return image
+        
+    # Assume the largest contour is the sclera
+    largest_contour = max(contours, key=cv2.contourArea)
+    
+    # Get bounding box
+    x, y, w, h = cv2.boundingRect(largest_contour)
+    
+    # Add a little padding if possible
+    padding = 5
+    x_start = max(0, x - padding)
+    y_start = max(0, y - padding)
+    x_end = min(image.shape[1], x + w + padding)
+    y_end = min(image.shape[0], y + h + padding)
+    
+    cropped_sclera = image[y_start:y_end, x_start:x_end]
+    
+    # Save the output for the professors
+    # imwrite expects BGR format, but cropped_sclera is RGB, so swap channels before saving
+    cv2.imwrite("sclera_debug.jpg", cv2.cvtColor(cropped_sclera, cv2.COLOR_RGB2BGR))
+    
+    return cropped_sclera
+
 # -----------------------------------------------------
 # Flask Callable Pipeline Function
 # -----------------------------------------------------
@@ -140,8 +207,11 @@ def process_pipeline(white_img, eye_img):
     white_mean_rgb = compute_white_reference(white_img)
 
     calibrated_eye = apply_white_balance(eye_img, white_mean_rgb)
+    
+    # SEGMENT THE SCLERA
+    isolated_sclera = segment_sclera(calibrated_eye)
 
-    features = extract_features(calibrated_eye)
+    features = extract_features(isolated_sclera)
 
     # Convert dictionary to ML-ready feature vector
     feature_vector = np.array(list(features.values())).reshape(1, -1)

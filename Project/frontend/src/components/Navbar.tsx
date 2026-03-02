@@ -18,23 +18,21 @@ export function Navbar() {
 
   const navLinks = isAuthenticated
     ? [
-        { name: "Dashboard", href: "/dashboard" },
-        { name: "Calibrate", href: "/calibrate" },
-        { name: "New Scan", href: "/scan" },
-        { name: "Research", href: "/research" },
-      ]
+      { name: "Dashboard", href: "/dashboard" },
+      { name: "Calibrate", href: "/calibrate" },
+      { name: "New Scan", href: "/scan" },
+    ]
     : [
-        { name: "Home", href: "/" },
-        { name: "Neonatal Jaundice", href: "/jaundice-info" },
-        { name: "About Tech", href: "/about" },
-        { name: "Research", href: "/research" },
-      ];
+      { name: "Home", href: "/" },
+      { name: "Neonatal Jaundice", href: "/jaundice-info" },
+      { name: "About Tech", href: "/about" },
+      { name: "Research", href: "/research" },
+    ];
 
   return (
     <nav
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        isScrolled ? "glass-card py-3 shadow-lg" : "py-5"
-      }`}
+      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? "bg-blue-50/80 backdrop-blur-md py-5 shadow-sm" : "py-8"
+        }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center">
@@ -60,11 +58,10 @@ export function Navbar() {
               <Link
                 key={link.name}
                 href={link.href}
-                className={`font-medium transition-colors hover:text-[hsl(var(--primary))] ${
-                  location === link.href
-                    ? "text-[hsl(var(--primary))]"
-                    : "text-muted-foreground"
-                }`}
+                className={`font-medium transition-colors hover:text-[hsl(var(--primary))] ${location === link.href
+                  ? "text-[hsl(var(--primary))]"
+                  : "text-muted-foreground"
+                  }`}
               >
                 {link.name}
               </Link>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useLocation } from "wouter";
-import { api } from "@shared/routes";
+import { api, buildUrl } from "@shared/routes";
 import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { Baby, ArrowRight, Loader2 } from "lucide-react";
@@ -19,7 +19,7 @@ export default function BabySetup() {
 
   const setupMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await fetch(api.baby.setup.path, {
+      const res = await fetch(buildUrl("/baby"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

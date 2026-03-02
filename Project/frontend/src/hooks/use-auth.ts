@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { useLocation } from "wouter";
+import { api, buildUrl } from "../shared/routes";
 import { useState, useEffect } from "react";
 
 
@@ -38,7 +39,7 @@ export function useLogin() {
 
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      const res = await fetch("http://localhost:5000/api/login", {
+      const res = await fetch(buildUrl("/login"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -78,7 +79,7 @@ export function useRegister() {
 
   return useMutation({
     mutationFn: async (data: { email: string; password: string }) => {
-      const res = await fetch("http://localhost:5000/api/register", {
+      const res = await fetch(buildUrl("/register"), {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

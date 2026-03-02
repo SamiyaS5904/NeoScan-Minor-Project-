@@ -73,6 +73,7 @@ export default function Register() {
             <input
               type="password"
               required
+              minLength={6}
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="w-full px-4 py-3 rounded-xl bg-white/50 border-2 border-border focus:border-[hsl(var(--primary))] focus:ring-4 focus:ring-[hsl(var(--primary))/10] outline-none transition-all"
@@ -89,12 +90,12 @@ export default function Register() {
           <button
             type="submit"
             disabled={registerMutation.isPending}
-            className="w-full py-4 rounded-xl font-bold text-white bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--primary))/80] shadow-lg shadow-[hsl(var(--primary))/25] hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:transform-none transition-all flex-center gap-2 mt-6"
+            className="w-full py-4 rounded-xl font-bold text-white bg-blue-600 shadow-lg shadow-blue-600/25 hover:shadow-xl hover:-translate-y-0.5 disabled:opacity-70 disabled:transform-none transition-all flex-center gap-2 mt-6"
           >
             {registerMutation.isPending ? (
               <Loader2 className="w-5 h-5 animate-spin" />
             ) : (
-              "Sign Up"
+              "Create Account"
             )}
           </button>
         </form>

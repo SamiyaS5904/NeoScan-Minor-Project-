@@ -14,6 +14,14 @@ export default function Calibrate() {
       { image: base64Image },
       {
         onSuccess: () => {
+          // Permanently mark user as calibrated in local storage to break the redirect loop
+          const storedUser = localStorage.getItem("neoscan_user");
+          if (storedUser) {
+            const user = JSON.parse(storedUser);
+            user.isCalibrated = 1;
+            localStorage.setItem("neoscan_user", JSON.stringify(user));
+          }
+
           toast({
             title: "Calibration Successful",
             description: "Your camera is now ready for scanning.",

@@ -11,7 +11,7 @@ import {
   FlaskConical
 } from "lucide-react";
 
-export function Landing () {
+export function Landing() {
   const fadeUp = {
     initial: { opacity: 0, y: 30 },
     whileInView: { opacity: 1, y: 0 },
@@ -88,10 +88,9 @@ export function Landing () {
 
       {/* ================= STATS ================= */}
       <section className="bg-white/60 backdrop-blur border-y">
-        <div className="max-w-5xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-4 gap-8 text-center">
+        <div className="max-w-4xl mx-auto px-6 py-10 grid grid-cols-2 md:grid-cols-3 gap-8 text-center">
           {[
             { value: "< 2 min", label: "Scan Duration" },
-            { value: "92%+", label: "Model Accuracy" },
             { value: "0", label: "Needles Required" },
             { value: "AI", label: "Risk Classification" }
           ].map((stat, i) => (
@@ -129,7 +128,7 @@ export function Landing () {
             {
               icon: <Eye className="w-8 h-8 text-[hsl(var(--accent))]" />,
               title: "Non-Invasive",
-              desc: "Quick and painless screening via eye image analysis."
+              desc: "Quick and painless screening via sclera (white of the eye) image analysis."
             },
             {
               icon: <ShieldCheck className="w-8 h-8 text-[hsl(var(--risk-safe))]" />,
@@ -179,8 +178,8 @@ export function Landing () {
               },
               {
                 step: "2",
-                title: "Scan Baby Skin",
-                desc: "AI extracts RGB values from the eye or forehead region."
+                title: "Scan Sclera",
+                desc: "AI extracts RGB values from the sclera (white of the eye) region."
               },
               {
                 step: "3",

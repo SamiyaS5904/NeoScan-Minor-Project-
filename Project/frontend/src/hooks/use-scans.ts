@@ -1,5 +1,5 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
-import { api, buildUrl } from "@shared/routes";
+import { api, buildUrl } from "../shared/routes";
 import { z } from "zod";
 
 function getAuthHeaders() {
@@ -12,57 +12,55 @@ function getAuthHeaders() {
 
 export function useCalibrate() {
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.scans.calibrate.input>) => {
-      const validated = api.scans.calibrate.input.parse(data);
-      const res = await fetch(api.scans.calibrate.path, {
-        method: api.scans.calibrate.method,
+    mutationFn: async (data: any) => {
+      const res = await fetch(buildUrl("/calibrate"), {
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify(validated),
+        body: JSON.stringify(data),
       });
 
       if (!res.ok) throw new Error("Calibration failed");
-      return api.scans.calibrate.responses[200].parse(await res.json());
+      return await res.json();
     },
   });
 }
 
 export function useAnalyze() {
   const queryClient = useQueryClient();
-  
+
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.scans.analyze.input>) => {
-      const validated = api.scans.analyze.input.parse(data);
-      const res = await fetch(api.scans.analyze.path, {
-        method: api.scans.analyze.method,
+    mutationFn: async (data: any) => {
+      const res = await fetch(buildUrl("/analyze"), {
+        method: "POST",
         headers: getAuthHeaders(),
-        body: JSON.stringify(validated),
+        body: JSON.stringify(data),
       });
 
       if (!res.ok) throw new Error("Analysis failed to start");
-      return api.scans.analyze.responses[200].parse(await res.json());
+      return await res.json();
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [api.scans.getHistory.path] });
+      queryClient.invalidateQueries({ queryKey: ["/history"] });
     }
   });
 }
 
 export function useScanResult(scanId: number | null) {
   return useQuery({
-    queryKey: [api.scans.getResult.path, scanId],
+    queryKey: ["/scan", scanId],
     queryFn: async () => {
       if (!scanId) return null;
-      const url = buildUrl(api.scans.getResult.path, { scan_id: scanId });
+      const url = buildUrl(`/scan/${scanId}`);
       const res = await fetch(url, { headers: getAuthHeaders() });
-      
+
       if (res.status === 404) throw new Error("Scan not found");
       if (!res.ok) throw new Error("Failed to fetch scan result");
-      
+
       const data = await res.json();
       // Date coercion workaround for Zod parsing JSON responses
       return {
         ...data,
-        createdAt: new Date(data.createdAt)
+        createdAt: data.createdAt ? new Date(data.createdAt) : new Date()
       };
     },
     enabled: !!scanId,
@@ -75,16 +73,16 @@ export function useScanResult(scanId: number | null) {
 
 export function useScanHistory() {
   return useQuery({
-    queryKey: [api.scans.getHistory.path],
+    queryKey: ["/history"],
     queryFn: async () => {
-      const res = await fetch(api.scans.getHistory.path, { headers: getAuthHeaders() });
+      const res = await fetch(buildUrl("/history"), { headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to fetch history");
-      
+
       const data = await res.json();
       // Coerce dates
       return data.map((item: any) => ({
         ...item,
-        createdAt: new Date(item.createdAt)
+        createdAt: item.createdAt ? new Date(item.createdAt) : new Date()
       }));
     },
   });

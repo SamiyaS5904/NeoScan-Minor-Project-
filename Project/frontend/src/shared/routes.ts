@@ -1,5 +1,6 @@
+const isProd = import.meta.env.PROD;
 export const api = {
-  baseUrl: import.meta.env.VITE_API_URL ? `${import.meta.env.VITE_API_URL}/api` : "http://localhost:5000/api",
+  baseUrl: isProd ? "/api" : "http://localhost:5000/api",
 };
 
 export const buildUrl = (path: string) => {

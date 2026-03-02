@@ -11,13 +11,15 @@ from flask import Flask, send_from_directory
 
 app = Flask(__name__, static_folder="dist", static_url_path="")
 
-@app.route("/")
-def serve():
-    return send_from_directory(app.static_folder, "index.html")
-
+@app.route("/", defaults={'path': ''})
 @app.route("/<path:path>")
-def static_proxy(path):
-    return send_from_directory(app.static_folder, path)
+def serve(path):
+    # If the file exists physically in the dist folder (like JS/CSS), return it
+    if path != "" and os.path.exists(os.path.join(app.static_folder, path)):
+        return send_from_directory(app.static_folder, path)
+    # Otherwise, it's a React Router path like /dashboard, return the index.html
+    else:
+        return send_from_directory(app.static_folder, "index.html")
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://neoscanuser:neoscan123@cluster0.45dsjs4.mongodb.net/?appName=Cluster0"

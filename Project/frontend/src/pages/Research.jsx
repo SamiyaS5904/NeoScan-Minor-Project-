@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { FileText, Download, BookOpen, Layers, BarChart3 } from "lucide-react";
 
-export function Research() {
+export default function Research() {
   return (
     <div className="pt-32 pb-24 max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
       <div className="text-center mb-16">

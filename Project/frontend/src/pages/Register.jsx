@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import { useRegister } from "@/hooks/use-auth";
 import { Activity, Loader2 } from "lucide-react";
 
-export function Register() {
+export default function Register() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");

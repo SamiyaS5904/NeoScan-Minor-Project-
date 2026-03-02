@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { useToast } from "../hooks/use-toast";
 import { motion } from "framer-motion";
 
-export function Calibrate() {
+export default function Calibrate() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const calibrateMutation = useCalibrate();

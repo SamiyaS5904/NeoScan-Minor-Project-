@@ -5,7 +5,7 @@ import { useToast } from "@/hooks/use-toast";
 import { motion } from "framer-motion";
 import { useEffect } from "react";
 
-export function Scan() {
+export default function Scan() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const analyzeMutation = useAnalyze();

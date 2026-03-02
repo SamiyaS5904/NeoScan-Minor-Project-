@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import { Cpu, ScanEye, Beaker } from "lucide-react";
 
-export function About() {
+export default function About() {
   return (
     <div className="pt-32 pb-24 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <motion.div 

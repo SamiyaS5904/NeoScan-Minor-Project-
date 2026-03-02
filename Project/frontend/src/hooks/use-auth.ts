@@ -1,11 +1,14 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { api } from "@shared/routes";
 import { useLocation } from "wouter";
 import { useState, useEffect } from "react";
-import { z } from "zod";
+
+
+// --------------------
+// AUTH STATUS
+// --------------------
 
 export function useAuthStatus() {
-  const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -24,55 +27,78 @@ export function useAuthStatus() {
   return { isAuthenticated, isLoading, logout };
 }
 
+
+// --------------------
+// LOGIN
+// --------------------
+
 export function useLogin() {
   const [, setLocation] = useLocation();
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.auth.login.input>) => {
-      const res = await fetch(api.auth.login.path, {
+    mutationFn: async (data: { email: string; password: string }) => {
+      const res = await fetch("http://localhost:5000/api/login", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
 
       if (!res.ok) {
-        if (res.status === 401) throw new Error("Invalid credentials");
-        throw new Error("Failed to login");
+        if (res.status === 401) {
+          throw new Error("Invalid credentials");
+        }
+        throw new Error("Login failed");
       }
+
       return res.json();
     },
+
     onSuccess: (data) => {
       localStorage.setItem("neoscan_token", data.token);
       localStorage.setItem("neoscan_user", JSON.stringify(data.user));
+
       queryClient.clear();
-      if (!data.hasBaby) {
-        setLocation("/baby-setup");
-      } else {
-        setLocation("/dashboard");
-      }
+
+      // Quick demo → always go dashboard
+      setLocation("/dashboard");
     },
   });
 }
+
+
+// --------------------
+// REGISTER
+// --------------------
 
 export function useRegister() {
   const [, setLocation] = useLocation();
 
   return useMutation({
-    mutationFn: async (data: z.infer<typeof api.auth.register.input>) => {
-      const res = await fetch(api.auth.register.path, {
+    mutationFn: async (data: { email: string; password: string }) => {
+      const res = await fetch("http://localhost:5000/api/register", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify(data),
       });
 
-      if (!res.ok) throw new Error("Registration failed");
+      if (!res.ok) {
+        throw new Error("Registration failed");
+      }
+
       return res.json();
     },
+
     onSuccess: (data) => {
       localStorage.setItem("neoscan_token", data.token);
       localStorage.setItem("neoscan_user", JSON.stringify(data.user));
-      setLocation("/baby-setup");
+
+      // Quick demo → go dashboard directly
+      setLocation("/dashboard");
     },
   });
 }

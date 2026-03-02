@@ -69,18 +69,20 @@ const getRiskIcon = (level) => {
   }
 };
 
-export function Dashboard() {
+export default function Dashboard() {
   const [, setLocation] = useLocation();
   const user = JSON.parse(localStorage.getItem("neoscan_user") || "{}");
 
   const { data: baby, isLoading: babyLoading } = useQuery({
-    queryKey: [api.baby.get.path],
-    queryFn: async () => {
-      const res = await fetch(api.baby.get.path);
+    queryKey: ["baby"],
+queryFn: async () => {
+  const res = await fetch("http://localhost:5000/api/baby");
       if (!res.ok) throw new Error("Failed to fetch baby profile");
       return res.json();
     },
   });
+
+
 
   const { data: history, isLoading: historyLoading } = useScanHistory();
   const isLoading = babyLoading || historyLoading;

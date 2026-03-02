@@ -12,7 +12,7 @@ import {
 } from "recharts";
 import { Info, AlertCircle, Clock, Globe } from "lucide-react";
 
-export function JaundiceInfo() {
+export default function JaundiceInfo() {
   const newbornData = [
     { name: "Physiological Jaundice", value: 60, color: "hsl(var(--primary))" },
     { name: "Premature Babies", value: 80, color: "hsl(var(--accent))" },

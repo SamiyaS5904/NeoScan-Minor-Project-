@@ -6,7 +6,7 @@ import { motion } from "framer-motion";
 import { Baby, ArrowRight, Loader2 } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 
-export function BabySetup() {
+export default function BabySetup() {
   const [, setLocation] = useLocation();
   const { toast } = useToast();
 

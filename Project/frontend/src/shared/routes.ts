@@ -1,5 +1,5 @@
 export const api = {
-  baseUrl: "http://localhost:8000", // your Flask backend
+  baseUrl: "http://localhost:5000",
 };
 
 export const buildUrl = (path: string) => {

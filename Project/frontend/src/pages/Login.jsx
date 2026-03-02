@@ -1,10 +1,11 @@
+console.log("Login Component Rendering");
 import { useState } from "react";
 import { Link } from "wouter";
 import { motion } from "framer-motion";
 import { useLogin } from "@/hooks/use-auth";
 import { Activity, Loader2 } from "lucide-react";
 
-export function Login() {
+export default function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const loginMutation = useLogin();

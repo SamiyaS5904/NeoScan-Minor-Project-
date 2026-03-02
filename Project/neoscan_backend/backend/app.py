@@ -1,35 +1,64 @@
 from flask import Flask, request, jsonify
 from flask_cors import CORS
-import cv2
-import numpy as np
-from image_processing import process_pipeline  
 
-app = Flask(__name__)
+app = Flask(_name_)
 CORS(app)
 
+# Dummy in-memory storage
+users = []
 
-@app.route("/api/health", methods=["GET"])
+@app.route("/api/health")
 def health():
     return {"status": "Backend running"}
 
-@app.route("/api/analyze", methods=["POST"])
-def analyze():
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.json
+    users.append(data)
+    return jsonify({
+        "token": "demo-token",
+        "user": data
+    })
 
-    white_file = request.files["white_image"]
-    eye_file = request.files["eye_image"]
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    for user in users:
+        if user["email"] == data["email"] and user["password"] == data["password"]:
+            return jsonify({
+                "token": "demo-token",
+                "user": user
+            })
+    return jsonify({"message": "Invalid credentials"}), 401
 
-    white_img = cv2.imdecode(
-        np.frombuffer(white_file.read(), np.uint8),
-        cv2.IMREAD_COLOR
-    )
+@app.route("/api/dashboard")
+def dashboard():
+    return jsonify({
+        "babyName": "Demo Baby",
+        "bilirubin": 8.4,
+        "risk": "Low",
+        "history": [
+            {"date": "2024-03-01", "value": 7.2},
+            {"date": "2024-03-02", "value": 8.4}
+        ]
+    })
 
-    eye_img = cv2.imdecode(
-        np.frombuffer(eye_file.read(), np.uint8),
-        cv2.IMREAD_COLOR
-    )
 
-    result = process_pipeline(white_img, eye_img)
+@app.route("/api/register", methods=["POST"])
+def register():
+    data = request.json
+    return jsonify({
+        "token": "demo-token",
+        "user": data
+    })
 
-    return jsonify(result)
+@app.route("/api/login", methods=["POST"])
+def login():
+    data = request.json
+    return jsonify({
+        "token": "demo-token",
+        "user": data
+    })
+    
 if __name__ == "__main__":
     app.run(debug=True, port=5000)

@@ -1,5 +1,6 @@
 import { motion } from "framer-motion";
 import { Link } from "wouter";
+import babyimage from "../assets/baby-image.jpg"
 import {
   ShieldCheck,
   Smartphone,
@@ -77,7 +78,7 @@ export function Landing() {
           <motion.div {...fadeUp} className="relative flex justify-center">
             <div className="glass rounded-3xl p-4 shadow-2xl">
               <img
-                src="/baby.jpg"
+                src={babyimage}
                 alt="NeoScan Baby Screening"
                 className="rounded-2xl w-full max-w-sm object-cover"
               />

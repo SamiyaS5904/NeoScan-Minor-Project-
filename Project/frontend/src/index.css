@@ -1,0 +1,95 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&family=Outfit:wght@100..900&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --font-display: 'Outfit', sans-serif;
+  --font-body: 'DM Sans', sans-serif;
+
+  /* Premium Medical Color Palette */
+  /* Background: Soft Teal / Mint */
+  --background: 160 30% 98%;
+  --foreground: 215 30% 15%;
+
+  /* Primary: Soft Blue */
+  --primary: 210 80% 60%;
+  --primary-foreground: 0 0% 100%;
+
+  /* Accent: Soft Yellow */
+  --accent: 42 90% 65%;
+  --accent-foreground: 215 30% 15%;
+
+  /* Secondary: Soft Mint */
+  --secondary: 160 50% 85%;
+  --secondary-foreground: 160 50% 20%;
+
+  /* Risk Levels */
+  --risk-safe: 142 60% 45%;
+  --risk-moderate: 32 90% 55%;
+  --risk-high: 0 80% 60%;
+
+  --muted: 210 20% 94%;
+  --muted-foreground: 215 15% 45%;
+
+  --border: 210 20% 90%;
+  --card: 0 0% 100%;
+  --card-foreground: 215 30% 15%;
+
+  --radius: 1rem;
+}
+
+@layer base {
+  body {
+    @apply bg-background text-foreground antialiased min-h-screen overflow-x-hidden;
+    font-family: var(--font-body);
+    background: radial-gradient(circle at top left, hsl(160 40% 95%), transparent 60%),
+                radial-gradient(circle at bottom right, hsl(210 40% 95%), transparent 60%);
+    background-attachment: fixed;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    @apply font-semibold tracking-tight;
+  }
+}
+
+@layer utilities {
+  .glass {
+    @apply bg-white/60 backdrop-blur-xl border border-white/50 shadow-[0_8px_30px_rgb(0,0,0,0.04)];
+  }
+  
+  .glass-dark {
+    @apply bg-white/80 backdrop-blur-2xl border border-white/60 shadow-[0_8px_30px_rgb(0,0,0,0.08)];
+  }
+
+  .text-gradient {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-[hsl(var(--primary))] to-[hsl(var(--secondary-foreground))];
+  }
+
+  .flex-center {
+    @apply flex items-center justify-center;
+  }
+}
+
+/* Animations */
+@keyframes float {
+  0% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+  100% { transform: translateY(0px); }
+}
+
+.animate-float {
+  animation: float 6s ease-in-out infinite;
+}
+
+@keyframes pulse-soft {
+  0% { box-shadow: 0 0 0 0 rgba(var(--primary), 0.4); }
+  70% { box-shadow: 0 0 0 15px rgba(var(--primary), 0); }
+  100% { box-shadow: 0 0 0 0 rgba(var(--primary), 0); }
+}
+
+.animate-pulse-soft {
+  animation: pulse-soft 2s infinite;
+}

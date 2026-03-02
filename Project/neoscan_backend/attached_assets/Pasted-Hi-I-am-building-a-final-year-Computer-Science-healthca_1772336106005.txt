@@ -1,0 +1,218 @@
+Hi,
+
+I am building a final-year Computer Science healthcare project called NeoScan.
+
+NeoScan is a Smart Non-Invasive Neonatal Jaundice Screening System that estimates bilirubin risk using image-based AI analysis.
+
+This is a professional academic medical project. The UI must feel trustworthy, clean, soft, medical, and modern — similar to premium health-tech platforms.
+
+I will provide the Python image-processing backend separately. You must focus on building a complete working React frontend that integrates with a Flask backend via API.
+
+PROJECT OVERVIEW (Core Workflow)
+
+NeoScan works in 3 stages:
+
+Calibration Step
+
+User must first capture an image of a white surface (e.g., white wall or paper).
+
+This image is sent to backend for lighting normalization calibration.
+
+Backend stores calibration reference.
+
+Frontend must clearly guide the user through this step.
+
+Baby Image Capture Step
+
+User captures image of baby’s eye region (or forehead).
+
+Camera preview must work properly using browser MediaDevices API.
+
+Image preview shown before submission.
+
+Image is sent to backend for processing.
+
+Analysis & Result
+
+After submission, user is redirected to Dashboard.
+
+Show "Analyzing..." loading state (simulate 1–2 minute processing delay).
+
+Poll backend periodically until result is ready.
+
+Display:
+
+Bilirubin value (mg/dL)
+
+Risk Level (Safe / Moderate / High)
+
+Confidence percentage
+
+Risk meter visualization (circular or gradient scale)
+
+Graph of recent trend
+
+UI DESIGN REQUIREMENTS (Based on Provided References)
+
+Design style must include:
+
+Soft gradient medical background (light teal / blue / mint tones)
+
+Glassmorphism or soft shadow cards
+
+Rounded edges
+
+Smooth hover effects
+
+Clean typography
+
+Minimal clutter
+
+Medical pastel color theme:
+
+Primary: Soft Blue
+
+Accent: Soft Yellow
+
+Safe: Green
+
+Moderate: Orange
+
+High Risk: Red
+
+Landing page should resemble premium AI medical product marketing page. Even if simpler than references, layout structure must be similar.
+
+REQUIRED PAGES
+1. Landing Page (Scroll-Based)
+
+Hero Section: "Smart Non-Invasive Jaundice Screening"
+
+Subtitle explanation
+
+CTA buttons: Start Screening | Login | Sign Up
+
+Feature cards (Quick, Painless, Accurate, AI-Powered)
+
+How It Works (3 steps with icons)
+
+Research-backed section
+
+Testimonials section
+
+Clean footer
+
+2. About NeoScan Page
+
+Explain technology
+
+Light reflection + AI risk assessment concept
+
+Professional medical tone
+
+3. Research Page
+
+Placeholder clinical validation content
+
+Charts or statistics cards
+
+4. Login Page
+
+Clean form
+
+JWT-based authentication support
+
+5. Sign Up Page
+
+Registration form
+
+6. Dashboard Page (Protected)
+
+Welcome message
+
+Risk Meter component
+
+Bilirubin reading
+
+Confidence score
+
+7-day trend graph (use Chart.js)
+
+Download Report button (UI only)
+
+7. Calibration Page
+
+Camera access
+
+Capture white surface image
+
+Preview + submit button
+
+API call to backend
+
+8. Scan Page
+
+Camera access
+
+Capture baby image
+
+Preview + submit button
+
+API call
+
+Redirect to Dashboard
+
+FUNCTIONAL REQUIREMENTS
+
+Use React + React Router
+
+Use functional components
+
+Use Tailwind CSS (v3)
+
+Use Axios for API calls
+
+Use Chart.js for graph
+
+Implement Protected Routes
+
+Store JWT in localStorage
+
+Use async polling to check analysis result
+
+Implement loading spinner while waiting
+
+Proper error handling
+
+Responsive design (mobile-first)
+
+API ASSUMPTIONS
+
+Backend endpoints (already implemented in Flask):
+
+POST /calibrate POST /analyze GET /result/<scan_id> POST /login POST /register
+
+Frontend must integrate cleanly with these.
+
+OUTPUT FORMAT REQUIRED
+
+Generate:
+
+Complete React project structure
+
+All required components
+
+All pages
+
+Routing setup
+
+Tailwind config
+
+package.json
+
+Clear file-by-file code
+
+Instructions to run
+
+Write production-quality, organized, well-commented React code.
+
+Only generate frontend code. Backend Python is already implemented separately.

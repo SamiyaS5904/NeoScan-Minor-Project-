@@ -5,7 +5,7 @@ services:
     env: python
     region: ohio
     plan: free
-    rootDir: neoscan_backend/backend
+    rootDir: Project/neoscan_backend/backend
     buildCommand: pip install -r requirements.txt
     startCommand: gunicorn -w 1 -b 0.0.0.0:$PORT app:app
     envVars:
@@ -18,7 +18,7 @@ services:
     env: static
     region: ohio
     plan: free
-    rootDir: frontend
+    rootDir: Project/frontend
     buildCommand: npm install && npm run build
     staticPublishPath: ./dist
     envVars:

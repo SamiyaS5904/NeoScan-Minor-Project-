@@ -1,0 +1,52 @@
+# NeoScan System Architecture and Pipeline Report
+
+## Overview
+NeoScan is a full-stack, AI-integrated web application designed to non-invasively detect markers of neonatal jaundice by analyzing the sclera (white of the eye). The system is built on a modern React frontend, a Python-based computer vision backend, and a cloud-hosted MongoDB database.
+
+## System Modules
+
+### 1. Frontend Module (User Interface & Capture)
+*   **Technologies:** React.js, Vite, TailwindCSS, `wouter`, `framer-motion`.
+*   **Purpose:** Provides a responsive, mobile-friendly interface for parents and doctors. 
+*   **Key Features:**
+    *   **Dashboard:** Displays the baby's profile, recent scan history, and a 7-day trend chart using `recharts`.
+    *   **Camera Capture:** Interfaces with the device camera to capture both the white calibration reference and the eye images, encoding them as Base64 strings.
+    *   **Action Plan:** Dynamically renders home remedies and care guidelines based on the scan results.
+
+### 2. Backend Module (API & Orchestration)
+*   **Technologies:** Python 3.12, Flask, Flask-CORS, PyMongo.
+*   **Purpose:** Acts as the central bridge between the frontend application, the database, and the computer vision engine.
+*   **Key Features:**
+    *   **Authentication & Routing:** Handles `/api/login`, `/api/register`, and `/api/baby` requests.
+    *   **Image Handling:** Receives Base64 image strings from the frontend, decodes them into arrays readable by Python, and routes them to the image processing module.
+    *   **Data Persistence:** Manages the connection to the MongoDB cluster to securely store user profiles, calibration data, and scan histories.
+
+### 3. Image Processing Module (Computer Vision)
+*   **Technologies:** OpenCV (`cv2`), NumPy.
+*   **Purpose:** The core scientific engine that mathematically processes the captured images to extract physiological color data.
+*   **Key Features:**
+    *   **White Balance Calibration:** Uses a stored white reference image to normalize the eye image, negating the effects of ambient room lighting.
+    *   **Sclera Segmentation:** Converts the image to the `YCrCb` color space to aggressively mask out human skin (cheeks/eyelids) and isolate the brightest contour representing the sclera.
+    *   **Feature Extraction:** Calculates 15 distinct color metrics (Mean, Std Dev, Ratios) across RGB, HSV, and YCrCb color spaces, outputting a highly structured 1D Feature Vector.
+
+### 4. Database Module (Cloud Storage)
+*   **Technologies:** MongoDB Atlas (NoSQL).
+*   **Purpose:** Provides persistent, structured storage for the application.
+*   **Key Features:**
+    *   **Collections:** Organizes data into `users`, `babies`, and `scans` collections.
+    *   **Calibration Persistence:** Stores the base64-encoded white calibration image directly inside the `users` collection document so it can be retrieved dynamically for all future scans by that user.
+
+## End-to-End User Pipeline
+
+1.  **Authentication:** The user logs in via the React frontend. The Flask backend authenticates them against the MongoDB `users` collection.
+2.  **Calibration (One-Time):** The user is prompted to take a picture of a white piece of paper under their current lighting conditions.
+    *   The frontend converts this image to Base64 and sends it to the `/api/calibrate` endpoint.
+    *   The backend saves this image string into the user's MongoDB profile.
+3.  **Eye Capture:** The user opens the Sclera Scan page and captures an image of the baby's eye.
+    *   The frontend converts this image to Base64 and sends it to the `/api/analyze` endpoint.
+4.  **Backend Processing:**
+    *   The backend retrieves the saved white calibration reference from MongoDB.
+    *   Both the eye image and the white image are passed to the Image Processing Module.
+    *   The module scales the images, balances the lighting based on the white reference, segments out the sclera, and extracts the 15-point Feature Vector (RGB, HSV, YCrCb values).
+5.  **Result Storage:** The backend takes this feature vector, calculates a temporary mock bilirubin value (for the current prototype stage), assigns a diagnostic risk level, and saves the entire JSON record to the `scans` collection in MongoDB.
+6.  **Dashboard Display:** The backend returns the scan JSON to the frontend. The Dashboard automatically renders the latest scan, plots the new data point on the 7-day trend graph, updates the RGB values block, and generates context-aware Neonatal Care Guidelines based on the risk level.

@@ -48,30 +48,39 @@ def login():
 
 @app.route("/api/baby", methods=["GET", "POST"])
 def baby():
+    # To keep Auth simple without changing frontend tokens, we use the user's email passed from frontend (if any) or just a simple query string 'email'
+    user_email = request.args.get("email") or "default@example.com"
+    
     if request.method == "POST":
         data = request.json
-        babies_collection.delete_many({}) # Keep simple for 1 baby profile for now
+        data["user_email"] = user_email
+        babies_collection.delete_many({"user_email": user_email}) # Only delete THIS user's baby profile
         babies_collection.insert_one(data)
         data["_id"] = str(data["_id"])
         return jsonify(data)
     
-    baby_profile = babies_collection.find_one()
+    baby_profile = babies_collection.find_one({"user_email": user_email})
     if baby_profile:
         baby_profile["_id"] = str(baby_profile["_id"])
         return jsonify(baby_profile)
-    return jsonify({"message": "Baby profile not found"}), 404
+    return jsonify({}), 200
 
 @app.route("/api/history", methods=["GET"])
 def history():
-    all_scans = list(scans_collection.find({}, {"_id": 0}))
+    user_email = request.args.get("email")
+    if user_email:
+        all_scans = list(scans_collection.find({"user_email": user_email}, {"_id": 0}).sort("_id", -1))
+    else:
+        all_scans = list(scans_collection.find({}, {"_id": 0}).sort("_id", -1))
     return jsonify(all_scans)
 
 @app.route("/api/calibrate", methods=["POST"])
 def calibrate():
     data = request.json
-    if "image" in data:
-        # Save the white calibration image to the database for future extraction
-        users_collection.update_many({}, {"$set": {"white_reference": data["image"]}})
+    user_email = request.args.get("email")
+    if "image" in data and user_email:
+        # Save the white calibration image to this specific user
+        users_collection.update_one({"email": user_email}, {"$set": {"white_reference": data["image"]}})
     return jsonify({"message": "Calibration successful", "isCalibrated": 1})
 
 @app.route("/api/analyze", methods=["POST"])
@@ -90,7 +99,19 @@ def analyze():
             if eye_img is None:
                 raise ValueError("cv2.imdecode returned None. The base64 data might be corrupted or not an image.")
             
-            white_img = eye_img 
+            
+            user_email = request.args.get("email")
+            user = users_collection.find_one({"email": user_email}) if user_email else None
+            white_img = eye_img # fallback
+            if user and "white_reference" in user:
+                w_b64 = user["white_reference"]
+                w_b64_str = w_b64.split(",")[1] if "," in w_b64 else w_b64
+                w_b64_str += "=" * ((4 - len(w_b64_str) % 4) % 4)
+                w_image_data = base64.b64decode(w_b64_str)
+                w_np_arr = np.frombuffer(w_image_data, np.uint8)
+                parsed_white = cv2.imdecode(w_np_arr, cv2.IMREAD_COLOR)
+                if parsed_white is not None:
+                    white_img = parsed_white
             
             features = process_pipeline(white_img, eye_img)
             feature_vector = features["feature_vector"][0] # Extract the 1D list from the 2D output
@@ -120,7 +141,8 @@ def analyze():
         "featureVector": feature_vector,
         "confidence": confidence,
         "riskLevel": risk_level,
-        "createdAt": datetime.datetime.now().isoformat()
+        "createdAt": datetime.datetime.now().isoformat(),
+        "user_email": request.args.get("email")
     }
     scans_collection.insert_one(new_scan)
     del new_scan["_id"]

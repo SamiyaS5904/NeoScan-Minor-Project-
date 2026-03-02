@@ -13,7 +13,8 @@ function getAuthHeaders() {
 export function useCalibrate() {
   return useMutation({
     mutationFn: async (data: any) => {
-      const res = await fetch(buildUrl("/calibrate"), {
+      const user = JSON.parse(localStorage.getItem("neoscan_user") || "{}");
+      const res = await fetch(buildUrl(`/calibrate?email=${user.email}`), {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(data),
@@ -30,7 +31,8 @@ export function useAnalyze() {
 
   return useMutation({
     mutationFn: async (data: any) => {
-      const res = await fetch(buildUrl("/analyze"), {
+      const user = JSON.parse(localStorage.getItem("neoscan_user") || "{}");
+      const res = await fetch(buildUrl(`/analyze?email=${user.email}`), {
         method: "POST",
         headers: getAuthHeaders(),
         body: JSON.stringify(data),
@@ -75,7 +77,8 @@ export function useScanHistory() {
   return useQuery({
     queryKey: ["/history"],
     queryFn: async () => {
-      const res = await fetch(buildUrl("/history"), { headers: getAuthHeaders() });
+      const user = JSON.parse(localStorage.getItem("neoscan_user") || "{}");
+      const res = await fetch(buildUrl(`/history?email=${user.email}`), { headers: getAuthHeaders() });
       if (!res.ok) throw new Error("Failed to fetch history");
 
       const data = await res.json();

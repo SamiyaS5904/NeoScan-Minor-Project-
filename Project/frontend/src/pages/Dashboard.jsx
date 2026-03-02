@@ -22,7 +22,7 @@ export default function Dashboard() {
   const { data: baby, isLoading: babyLoading } = useQuery({
     queryKey: ["baby"],
     queryFn: async () => {
-      const res = await fetch(buildUrl("/baby"));
+      const res = await fetch(buildUrl(`/baby?email=${user.email}`));
       // if (!res.ok) throw new Error("Failed to fetch baby profile");
       if (!res.ok) return null;
       return res.json();
@@ -42,7 +42,7 @@ export default function Dashboard() {
     }))
     .reverse() || [];
 
-  if (!isLoading && !baby) {
+  if (!isLoading && (!baby || !baby.name)) {
     setLocation("/setup");
     return null;
   }

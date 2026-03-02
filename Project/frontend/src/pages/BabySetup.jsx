@@ -19,7 +19,8 @@ export default function BabySetup() {
 
   const setupMutation = useMutation({
     mutationFn: async (data) => {
-      const res = await fetch(buildUrl("/baby"), {
+      const user = JSON.parse(localStorage.getItem("neoscan_user") || "{}");
+      const res = await fetch(buildUrl(`/baby?email=${user.email}`), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(data),

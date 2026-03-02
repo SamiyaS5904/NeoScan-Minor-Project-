@@ -6,10 +6,18 @@ import numpy as np
 import cv2
 from image_processing import process_pipeline
 from pymongo import MongoClient
+import os
+from flask import Flask, send_from_directory
 
-app = Flask(__name__)
-# Enable CORS for the Vite dev server
-CORS(app, resources={r"/api/*": {"origins": "*"}})
+app = Flask(__name__, static_folder="dist", static_url_path="")
+
+@app.route("/")
+def serve():
+    return send_from_directory(app.static_folder, "index.html")
+
+@app.route("/<path:path>")
+def static_proxy(path):
+    return send_from_directory(app.static_folder, path)
 
 # MongoDB Connection
 MONGO_URI = "mongodb+srv://neoscanuser:neoscan123@cluster0.45dsjs4.mongodb.net/?appName=Cluster0"

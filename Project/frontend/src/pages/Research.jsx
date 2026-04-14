@@ -11,9 +11,9 @@ export default function Research() {
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-16">
         {[
-          { label: "Accuracy Rate", value: "94.2%", icon: <BarChart3 className="w-5 h-5" /> },
+
           { label: "Clinical Trials", value: "12+", icon: <Layers className="w-5 h-5" /> },
-          { label: "Papers Reviewed", value: "85+", icon: <BookOpen className="w-5 h-5" /> },
+          { label: "Papers Reviewed", value: "15+", icon: <BookOpen className="w-5 h-5" /> },
         ].map((stat, i) => (
           <div key={i} className="glass p-6 rounded-2xl flex flex-col items-center justify-center text-center">
             <div className="w-10 h-10 bg-[hsl(var(--primary))/10] rounded-full flex items-center justify-center mb-3 text-[hsl(var(--primary))]">
@@ -49,7 +49,7 @@ export default function Research() {
               { title: "Chromaticity-based Neonatal Jaundice Screening: A Comparative Study", journal: "Journal of Clinical Pediatrics", year: "2023" },
               { title: "Smartphone Camera Sensor Calibration for Medical Diagnostics", journal: "IEEE Transactions on Biomedical Engineering", year: "2023" },
             ].map((paper, i) => (
-              <motion.div 
+              <motion.div
                 key={i}
                 initial={{ opacity: 0, x: -20 }}
                 whileInView={{ opacity: 1, x: 0 }}

@@ -1,0 +1,13 @@
+Django==5.2.4
+djangorestframework
+pillow
+numpy
+opencv-python
+scikit-learn
+xgboost
+pandas
+joblib
+# Optional MongoDB driver:
+# djongo
+pymongo
+openai

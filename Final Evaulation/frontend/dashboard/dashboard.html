@@ -1,0 +1,2296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeoScan AI - Dashboard</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<style>
+
+/* ===== Enhanced Resource Modals ===== */
+.paper-list{
+    display:flex;
+    flex-direction:column;
+    gap:1.2rem;
+}
+
+.paper-card{
+    background:var(--bg-body);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:1.2rem;
+    transition:var(--transition);
+}
+
+.paper-card:hover{
+    transform:translateY(-4px);
+}
+
+.paper-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:1rem;
+    flex-wrap:wrap;
+}
+
+.info-scroll{
+    display:flex;
+    flex-direction:column;
+    gap:1.5rem;
+}
+
+.info-banner{
+    width:100%;
+    height:280px;
+    object-fit:cover;
+    border-radius:22px;
+}
+
+.info-section{
+    background:var(--bg-body);
+    border:1px solid var(--border);
+    border-radius:22px;
+    overflow:hidden;
+}
+
+.info-section img{
+    width:100%;
+    height:240px;
+    object-fit:cover;
+}
+
+.info-content{
+    padding:1.5rem;
+}
+
+.info-content h3{
+    margin-bottom:.8rem;
+}
+
+.info-content p{
+    color:var(--text-muted);
+    line-height:1.9;
+}
+
+.tip-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+    gap:1.2rem;
+}
+
+.tip-card{
+    background:var(--bg-body);
+    border:1px solid var(--border);
+    border-radius:22px;
+    overflow:hidden;
+    transition:var(--transition);
+}
+
+.tip-card:hover{
+    transform:translateY(-5px);
+}
+
+.tip-card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+}
+
+.tip-content{
+    padding:1.2rem;
+}
+
+.tip-content p{
+    color:var(--text-muted);
+    margin-top:.7rem;
+    line-height:1.8;
+}
+
+.faq-image{
+    width:100%;
+    height:240px;
+    object-fit:cover;
+    border-radius:20px;
+    margin-bottom:1.5rem;
+}
+
+
+:root{
+    --primary:#2563eb;
+    --primary-light:#dbeafe;
+    --bg-body:#f8fafc;
+    --bg-card:#ffffff;
+    --text-main:#1e293b;
+    --text-muted:#64748b;
+    --border:#e2e8f0;
+    --success:#22c55e;
+    --warning:#f59e0b;
+    --danger:#ef4444;
+    --sidebar-width:260px;
+    --transition:all .3s cubic-bezier(.4,0,.2,1);
+}
+
+[data-theme="dark"]{
+    --bg-body:#0f172a;
+    --bg-card:#1e293b;
+    --text-main:#f1f5f9;
+    --text-muted:#94a3b8;
+    --border:#334155;
+}
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Inter',sans-serif;
+}
+
+body{
+    background:var(--bg-body);
+    color:var(--text-main);
+    overflow-x:hidden;
+    transition:var(--transition);
+}
+
+h1,h2,h3,.logo-text{
+    font-family:'Poppins',sans-serif;
+}
+
+.wrapper{
+    display:flex;
+    min-height:100vh;
+}
+
+.sidebar{
+    width:var(--sidebar-width);
+    background:var(--bg-card);
+    border-right:1px solid var(--border);
+    padding:1.5rem;
+    display:flex;
+    flex-direction:column;
+    position:fixed;
+    height:100vh;
+    z-index:100;
+    transition:var(--transition);
+}
+
+.logo-container{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    margin-bottom:2rem;
+    color:var(--primary);
+}
+
+.logo-text{
+    font-size:1.4rem;
+    font-weight:700;
+}
+
+.nav-menu{
+    list-style:none;
+    flex-grow:1;
+    overflow-y:auto;
+}
+
+.nav-item{
+    margin-bottom:.5rem;
+}
+
+.nav-link{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding:.8rem 1rem;
+    border-radius:12px;
+    color:var(--text-muted);
+    text-decoration:none;
+    transition:var(--transition);
+    cursor:pointer;
+    font-weight:500;
+}
+
+.nav-link:hover,.nav-link.active{
+    background:var(--primary-light);
+    color:var(--primary);
+    transform:translateX(3px);
+}
+
+.nav-link.logout{
+    color:var(--danger);
+}
+
+.main-content{
+    flex-grow:1;
+    margin-left:var(--sidebar-width);
+    padding:2rem;
+}
+
+.top-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:2rem;
+    gap:1rem;
+}
+
+.search-box{
+    position:relative;
+    width:400px;
+}
+
+.search-box input{
+    width:100%;
+    padding:.8rem 1rem .8rem 2.7rem;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--bg-card);
+    outline:none;
+    color:var(--text-main);
+}
+
+.search-box i{
+    position:absolute;
+    left:1rem;
+    top:50%;
+    transform:translateY(-50%);
+    color:var(--text-muted);
+}
+
+.header-actions{
+    display:flex;
+    align-items:center;
+    gap:1rem;
+}
+
+.icon-btn{
+    border:none;
+    background:var(--bg-card);
+    width:42px;
+    height:42px;
+    border-radius:12px;
+    border:1px solid var(--border);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+    transition:var(--transition);
+    color:var(--text-main);
+    position:relative;
+}
+
+.icon-btn:hover{
+    transform:translateY(-2px);
+}
+
+.notification-dot{
+    width:8px;
+    height:8px;
+    border-radius:50%;
+    background:var(--danger);
+    position:absolute;
+    top:8px;
+    right:8px;
+}
+
+.user-profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding-left:1rem;
+    border-left:1px solid var(--border);
+}
+
+.user-avatar{
+    width:42px;
+    height:42px;
+    border-radius:50%;
+    object-fit:cover;
+}
+
+.stats-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1.5rem;
+    margin-bottom:2rem;
+}
+
+.stat-card{
+    background:var(--bg-card);
+    border-radius:22px;
+    padding:1.5rem;
+    border:1px solid var(--border);
+    transition:var(--transition);
+    position:relative;
+    overflow:hidden;
+}
+
+.stat-card:hover{
+    transform:translateY(-6px);
+    box-shadow:0 15px 30px rgba(0,0,0,.06);
+}
+
+.stat-header{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:1rem;
+}
+
+.stat-icon{
+    width:50px;
+    height:50px;
+    border-radius:14px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:1.1rem;
+}
+
+.stat-value{
+    font-size:2rem;
+    font-weight:700;
+}
+
+.stat-label{
+    color:var(--text-muted);
+    font-size:.9rem;
+}
+
+.dashboard-grid{
+    display:grid;
+    grid-template-columns:2fr 1fr;
+    gap:1.5rem;
+}
+
+.card{
+    background:var(--bg-card);
+    border-radius:22px;
+    padding:1.5rem;
+    border:1px solid var(--border);
+    margin-bottom:1.5rem;
+    animation:fadeUp .7s ease;
+}
+
+.card-title{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:1.2rem;
+    font-weight:600;
+    font-size:1.1rem;
+}
+
+.upload-area{
+    border:2px dashed var(--border);
+    border-radius:18px;
+    padding:3rem;
+    text-align:center;
+    background:var(--bg-body);
+    transition:var(--transition);
+}
+
+.upload-area:hover{
+    border-color:var(--primary);
+    background:var(--primary-light);
+}
+
+.upload-icon{
+    font-size:3rem;
+    color:var(--primary);
+    margin-bottom:1rem;
+}
+
+.upload-actions{
+    display:flex;
+    justify-content:center;
+    gap:1rem;
+    flex-wrap:wrap;
+}
+
+.action-btn{
+    border:none;
+    padding:.9rem 1.4rem;
+    border-radius:12px;
+    background:var(--primary);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    transition:var(--transition);
+}
+
+.action-btn:hover{
+    transform:translateY(-2px);
+}
+
+.secondary-btn{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    color:var(--text-main);
+}
+
+.preview-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
+    gap:1rem;
+    margin-top:1.5rem;
+}
+
+.preview-box{
+    background:var(--bg-body);
+    border-radius:18px;
+    border:1px solid var(--border);
+    padding:1rem;
+    text-align:center;
+}
+
+.preview-box img{
+    width:100%;
+    height:170px;
+    object-fit:cover;
+    border-radius:14px;
+    margin-top:.5rem;
+}
+
+.placeholder-box{
+    width:100%;
+    height:170px;
+    border-radius:14px;
+    background:linear-gradient(135deg,#eff6ff,#e2e8f0);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:var(--text-muted);
+    font-size:.9rem;
+}
+
+.result-badge{
+    display:inline-flex;
+    align-items:center;
+    gap:8px;
+    padding:.6rem 1rem;
+    border-radius:30px;
+    font-size:.85rem;
+    font-weight:600;
+    margin-bottom:1rem;
+}
+
+.high-risk{
+    background:#fee2e2;
+    color:#ef4444;
+}
+
+.low-risk{
+    background:#dcfce7;
+    color:#16a34a;
+}
+
+.progress-bar{
+    width:100%;
+    height:8px;
+    border-radius:20px;
+    background:#e2e8f0;
+    overflow:hidden;
+    margin-top:.4rem;
+}
+
+.progress-fill{
+    width:0%;
+    height:100%;
+    background:var(--primary);
+    border-radius:20px;
+    transition:width 1.5s ease;
+}
+
+.chart-container{
+    height:280px;
+}
+
+.history-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1rem;
+}
+
+.history-card{
+    background:var(--bg-body);
+    border:1px solid var(--border);
+    border-radius:18px;
+    padding:1rem;
+    cursor:pointer;
+    transition:var(--transition);
+}
+
+.history-card:hover{
+    transform:translateY(-4px);
+}
+
+.history-card img{
+    width:100%;
+    height:160px;
+    object-fit:cover;
+    border-radius:14px;
+    margin-bottom:1rem;
+}
+
+.resource-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
+    gap:1rem;
+}
+
+.resource-card{
+    background:var(--bg-body);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:1.2rem;
+    transition:var(--transition);
+}
+
+.resource-card:hover{
+    transform:translateY(-5px);
+}
+
+.resource-image{
+    width:100%;
+    height:180px;
+    border-radius:14px;
+    object-fit:cover;
+    margin-bottom:1rem;
+}
+
+.modal-overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.55);
+    backdrop-filter:blur(6px);
+    z-index:9999;
+    display:none;
+    justify-content:center;
+    align-items:center;
+    padding:1rem;
+}
+
+.modal-overlay.active{
+    display:flex;
+    animation:fade .3s ease;
+}
+
+.modal-content{
+    background:var(--bg-card);
+    width:100%;
+    max-width:1100px;
+    border-radius:26px;
+    border:1px solid var(--border);
+    max-height:92vh;
+    overflow:hidden;
+    animation:scaleIn .35s ease;
+}
+
+.modal-header{
+    padding:1.5rem 2rem;
+    border-bottom:1px solid var(--border);
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+}
+
+.modal-body{
+    padding:2rem;
+    overflow-y:auto;
+    max-height:80vh;
+}
+
+.close-modal{
+    background:none;
+    border:none;
+    font-size:1.4rem;
+    cursor:pointer;
+    color:var(--text-muted);
+}
+
+.form-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
+    gap:1rem;
+}
+
+.input-group{
+    display:flex;
+    flex-direction:column;
+    gap:.5rem;
+}
+
+.input-group input,
+.input-group textarea,
+.input-group select{
+    padding:.9rem 1rem;
+    border-radius:14px;
+    border:1px solid var(--border);
+    background:var(--bg-body);
+    color:var(--text-main);
+    outline:none;
+}
+
+.modal-actions{
+    display:flex;
+    justify-content:flex-end;
+    gap:1rem;
+    margin-top:1.5rem;
+}
+
+.notification-panel{
+    position:absolute;
+    top:55px;
+    right:0;
+    width:320px;
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:1rem;
+    box-shadow:0 20px 40px rgba(0,0,0,.08);
+    display:none;
+    z-index:999;
+}
+
+.notification-panel.active{
+    display:block;
+    animation:fadeUp .3s ease;
+}
+
+.notification-item{
+    display:flex;
+    gap:12px;
+    padding:1rem 0;
+    border-bottom:1px solid var(--border);
+}
+
+.notification-item:last-child{
+    border-bottom:none;
+}
+
+.accordion-item{
+    border:1px solid var(--border);
+    border-radius:16px;
+    margin-bottom:1rem;
+    overflow:hidden;
+}
+
+.accordion-header{
+    padding:1rem 1.2rem;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    cursor:pointer;
+    background:var(--bg-body);
+}
+
+.accordion-body{
+    max-height:0;
+    overflow:hidden;
+    transition:max-height .4s ease;
+    padding:0 1.2rem;
+}
+
+.accordion-item.active .accordion-body{
+    max-height:300px;
+    padding:1rem 1.2rem;
+}
+
+.report-layout{
+    border:1px solid var(--border);
+    border-radius:20px;
+    padding:2rem;
+    background:var(--bg-body);
+}
+
+.fade-reveal{
+    opacity:0;
+    transform:translateY(25px);
+    transition:all .8s ease;
+}
+
+.fade-reveal.active{
+    opacity:1;
+    transform:translateY(0);
+}
+
+.loading-line{
+    width:100%;
+    height:8px;
+    border-radius:20px;
+    background:#e2e8f0;
+    overflow:hidden;
+    margin-top:1rem;
+}
+
+.loading-line span{
+    display:block;
+    width:40%;
+    height:100%;
+    background:linear-gradient(90deg,transparent,var(--primary),transparent);
+    animation:loading 1.5s infinite;
+}
+
+@keyframes loading{
+    0%{transform:translateX(-100%);}
+    100%{transform:translateX(300%);}
+}
+
+@keyframes fade{
+    from{opacity:0;}
+    to{opacity:1;}
+}
+
+@keyframes scaleIn{
+    from{
+        transform:scale(.9);
+        opacity:0;
+    }
+    to{
+        transform:scale(1);
+        opacity:1;
+    }
+}
+
+@keyframes fadeUp{
+    from{
+        opacity:0;
+        transform:translateY(25px);
+    }
+    to{
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+
+@media(max-width:1024px){
+
+    .sidebar{
+        width:85px;
+        padding:1rem;
+    }
+
+    .logo-text,
+    .nav-link span{
+        display:none;
+    }
+
+    .main-content{
+        margin-left:85px;
+    }
+
+    .dashboard-grid{
+        grid-template-columns:1fr;
+    }
+
+    .search-box{
+        width:240px;
+    }
+}
+
+@media(max-width:768px){
+
+    .top-header{
+        flex-direction:column;
+        align-items:flex-start;
+    }
+
+    .search-box{
+        width:100%;
+    }
+
+    .main-content{
+        padding:1rem;
+    }
+
+    .modal-body{
+        padding:1rem;
+    }
+
+    .modal-header{
+        padding:1rem;
+    }
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<nav class="sidebar">
+
+<div class="logo-container">
+<i class="fas fa-eye-dropper fa-2x"></i>
+<span class="logo-text">NeoScan AI</span>
+</div>
+
+<ul class="nav-menu">
+
+<li class="nav-item">
+<a class="nav-link active">
+<i class="fas fa-th-large"></i>
+<span>Dashboard</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openUploadModal()">
+<i class="fas fa-upload"></i>
+<span>Upload Detection</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openBabyModal()">
+<i class="fas fa-baby"></i>
+<span>Baby Info</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openHistoryModal()">
+<i class="fas fa-clock-rotate-left"></i>
+<span>History</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openAnalyticsModal()">
+<i class="fas fa-chart-line"></i>
+<span>Analytics</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openResourcesModal()">
+<i class="fas fa-book-medical"></i>
+<span>Resources</span>
+</a>
+</li>
+
+<li class="nav-item">
+<a class="nav-link" onclick="openSettingsModal()">
+<i class="fas fa-cog"></i>
+<span>Settings</span>
+</a>
+</li>
+
+<li class="nav-item">
+    <a href="{% url 'logout' %}" class="nav-link logout">
+        <i class="fas fa-sign-out-alt"></i>
+        <span>Logout</span>
+    </a>
+</li>
+</ul>
+
+</nav>
+
+<main class="main-content">
+
+<header class="top-header">
+
+<div>
+<h1 style="font-size:1.7rem;">Welcome back, Dr. John</h1>
+<p style="color:var(--text-muted);margin-top:4px;">NeoScan AI neonatal jaundice monitoring dashboard.</p>
+</div>
+
+<div class="header-actions">
+
+<div class="search-box">
+<i class="fas fa-search"></i>
+<input type="text" placeholder="Search patients, reports, analytics...">
+</div>
+
+<button class="icon-btn" onclick="toggleTheme()">
+<i class="fas fa-moon" id="theme-icon"></i>
+</button>
+
+<div style="position:relative;">
+<button class="icon-btn" onclick="toggleNotifications()">
+<i class="fas fa-bell"></i>
+<span class="notification-dot"></span>
+</button>
+
+<div class="notification-panel" id="notificationPanel">
+
+<div class="notification-item">
+<i class="fas fa-check-circle" style="color:var(--success);margin-top:4px;"></i>
+<div>
+<div style="font-weight:600;">Detection Completed</div>
+<small style="color:var(--text-muted);">Awaiting backend integration.</small>
+</div>
+</div>
+
+<div class="notification-item">
+<i class="fas fa-file-medical" style="color:var(--primary);margin-top:4px;"></i>
+<div>
+<div style="font-weight:600;">Report Ready</div>
+<small style="color:var(--text-muted);">Professional report generated.</small>
+</div>
+</div>
+
+<div class="notification-item">
+<i class="fas fa-triangle-exclamation" style="color:var(--danger);margin-top:4px;"></i>
+<div>
+<div style="font-weight:600;">High Risk Alert</div>
+<small style="color:var(--text-muted);">Consultation recommended.</small>
+</div>
+</div>
+
+</div>
+</div>
+
+<div class="user-profile">
+    <img src="https://i.pravatar.cc/150?img=12" class="user-avatar" id="profileImage">
+
+    <div>
+        <div style="font-weight:600;" id="profileName">
+            {{ request.user.username }}
+        </div>
+
+        <div style="font-size:.8rem;color:var(--text-muted);">
+            Logged In User
+        </div>
+    </div>
+</div>
+
+</div>
+
+</header>
+
+<div class="stats-grid">
+
+<div class="stat-card fade-reveal">
+
+<div class="stat-header">
+<div class="stat-icon" style="background:#eff6ff;color:#2563eb;">
+<i class="fas fa-camera"></i>
+</div>
+</div>
+
+<div class="stat-value" id="totalScans">0</div>
+<div class="stat-label">Total Scans</div>
+
+</div>
+
+<div class="stat-card fade-reveal">
+
+<div class="stat-header">
+<div class="stat-icon" style="background:#fee2e2;color:#ef4444;">
+<i class="fas fa-triangle-exclamation"></i>
+</div>
+</div>
+
+<div class="stat-value" id="positiveCases">0</div>
+<div class="stat-label">Positive Cases</div>
+
+</div>
+
+<div class="stat-card fade-reveal">
+
+<div class="stat-header">
+<div class="stat-icon" style="background:#f0fdf4;color:#22c55e;">
+<i class="fas fa-brain"></i>
+</div>
+</div>
+
+<div class="stat-value" style="font-size:1rem;">Model Training in Progress</div>
+<div class="stat-label">Accuracy evaluation ongoing</div>
+
+</div>
+
+<div class="stat-card fade-reveal">
+
+<div class="stat-header">
+<div class="stat-icon" style="background:#faf5ff;color:#9333ea;">
+<i class="fas fa-calendar-day"></i>
+</div>
+</div>
+
+<div class="stat-value" id="todayScans">0</div>
+<div class="stat-label">Today's Scans</div>
+
+</div>
+
+</div>
+
+<div class="dashboard-grid">
+
+<div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Quick Scan
+<span><i class="fas fa-circle-info"></i></span>
+</div>
+
+<div class="upload-area" id="drop-zone">
+
+<i class="fas fa-cloud-upload-alt upload-icon"></i>
+
+<h3>Upload Neonatal Eye Image</h3>
+
+<p style="margin:.7rem 0 1.5rem;color:var(--text-muted);">
+Upload or capture sclera image for AI-based jaundice analysis.
+</p>
+
+<div class="upload-actions">
+
+<button class="action-btn" onclick="document.getElementById('fileInput').click()">
+<i class="fas fa-upload"></i>
+Upload Image
+</button>
+
+<button class="action-btn secondary-btn" onclick="openCamera()">
+<i class="fas fa-camera"></i>
+Camera
+</button>
+
+<button class="action-btn secondary-btn" onclick="openBabyModal()">
+<i class="fas fa-plus"></i>
+New Baby
+</button>
+
+</div>
+
+<input type="file" id="fileInput" accept="image/*" hidden>
+
+<div id="processingSection" style="display:none;margin-top:2rem;">
+<h4>Analyzing Sclera...</h4>
+<div class="loading-line"><span></span></div>
+</div>
+
+<div class="preview-container">
+
+<div class="preview-box">
+<div>Original Image</div>
+<div class="placeholder-box" id="originalPlaceholder">
+Awaiting upload
+</div>
+<img id="uploadedPreview" style="display:none;">
+</div>
+
+<div class="preview-box">
+<div>Eye Crop Preview</div>
+<div class="placeholder-box">
+Backend eye crop preview
+</div>
+</div>
+
+<div class="preview-box">
+<div>Sclera Segmentation</div>
+<div class="placeholder-box">
+Segmentation overlay pending
+</div>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Recent Detection Result
+</div>
+
+<div class="result-badge low-risk">
+<i class="fas fa-circle-check"></i>
+Awaiting backend analysis
+</div>
+
+<div style="margin-bottom:1rem;">
+<div style="display:flex;justify-content:space-between;">
+<span style="color:var(--text-muted);font-size:.9rem;">Confidence Score</span>
+<span style="font-weight:600;">Pending</span>
+</div>
+
+<div class="progress-bar">
+<div class="progress-fill" id="confidenceFill"></div>
+</div>
+</div>
+
+<div class="preview-container">
+
+<div class="preview-box">
+<div>RGB Analysis</div>
+<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
+RGB values will appear after image processing.
+</p>
+</div>
+
+<div class="preview-box">
+<div>Bilirubin Indicator</div>
+<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
+Awaiting backend analysis.
+</p>
+</div>
+
+<div class="preview-box">
+<div>AI Insights</div>
+<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
+Lighting and sclera quality insights will appear here.
+</p>
+</div>
+
+</div>
+
+</div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Baby History
+<button class="action-btn secondary-btn" onclick="openHistoryModal()">
+View All
+</button>
+</div>
+
+<div class="history-grid" id="historyContainer">
+
+<div class="history-card">
+<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
+<h4>History Empty</h4>
+<p style="color:var(--text-muted);margin-top:6px;">
+Patient scan history will appear here after uploads.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+<div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Analytics Overview
+</div>
+
+<div class="chart-container">
+<canvas id="weeklyChart"></canvas>
+</div>
+
+</div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Model Information
+</div>
+
+<div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.2rem;">
+
+<div style="width:70px;height:70px;border-radius:50%;border:6px solid var(--primary-light);border-top-color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;">
+AI
+</div>
+
+<div>
+<div style="font-weight:700;">Random Forest Model</div>
+<div style="font-size:.85rem;color:var(--text-muted);">
+Dataset: Awaiting final training dataset
+</div>
+</div>
+
+</div>
+
+<div style="display:flex;flex-direction:column;gap:12px;font-size:.9rem;">
+
+<div style="display:flex;justify-content:space-between;">
+<span>Training Status</span>
+<span style="font-weight:600;">In Progress</span>
+</div>
+
+<div style="display:flex;justify-content:space-between;">
+<span>Confusion Matrix</span>
+<span style="font-weight:600;">Pending Validation</span>
+</div>
+
+<div style="display:flex;justify-content:space-between;">
+<span>Backend Integration</span>
+<span style="font-weight:600;">Development Stage</span>
+</div>
+
+</div>
+
+</div>
+
+<div class="card fade-reveal">
+
+<div class="card-title">
+Resources
+</div>
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<i class="fas fa-book-medical" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
+<h4>Research Papers</h4>
+<p style="color:var(--text-muted);margin:8px 0 1rem;">
+Clinical and AI-based neonatal jaundice studies.
+</p>
+<button class="action-btn secondary-btn" onclick="openResearchModal()">
+Open
+</button>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-circle-info" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
+<h4>About Jaundice</h4>
+<p style="color:var(--text-muted);margin:8px 0 1rem;">
+Medical overview and neonatal information.
+</p>
+<button class="action-btn secondary-btn" onclick="openAboutModal()">
+Open
+</button>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-shield-heart" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
+<h4>Prevention Tips</h4>
+<p style="color:var(--text-muted);margin:8px 0 1rem;">
+Guidelines and healthcare recommendations.
+</p>
+<button class="action-btn secondary-btn" onclick="openTipsModal()">
+Open
+</button>
+</div>
+
+<div class="resource-card">
+<i class="fas fa-question-circle" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
+<h4>FAQs</h4>
+<p style="color:var(--text-muted);margin:8px 0 1rem;">
+Frequently asked clinical questions.
+</p>
+<button class="action-btn secondary-btn" onclick="openFAQModal()">
+Open
+</button>
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</div>
+
+</main>
+
+</div>
+
+<div class="modal-overlay" id="modalOverlay">
+
+<div class="modal-content">
+
+<div class="modal-header">
+<h2 id="modalTitle">Modal</h2>
+<button class="close-modal" onclick="closeModal()">
+<i class="fas fa-xmark"></i>
+</button>
+</div>
+
+<div class="modal-body" id="modalBody">
+</div>
+
+</div>
+
+</div>
+
+<!-- Chatbot UI -->
+<style>
+.chat-widget {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 350px;
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    z-index: 1000;
+    overflow: hidden;
+    transform: translateY(120%);
+    transition: transform 0.3s ease;
+}
+.chat-widget.open {
+    transform: translateY(0);
+}
+.chat-header {
+    background: var(--primary);
+    color: white;
+    padding: 15px;
+    font-weight: 600;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.chat-header i { cursor: pointer; }
+.chat-body {
+    height: 350px;
+    overflow-y: auto;
+    padding: 15px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    background: var(--bg-body);
+}
+.chat-msg {
+    max-width: 85%;
+    padding: 10px 14px;
+    border-radius: 14px;
+    font-size: 0.9rem;
+    line-height: 1.4;
+}
+.chat-msg.bot {
+    background: var(--card-bg);
+    border: 1px solid var(--border);
+    align-self: flex-start;
+    border-bottom-left-radius: 4px;
+}
+.chat-msg.user {
+    background: var(--primary);
+    color: white;
+    align-self: flex-end;
+    border-bottom-right-radius: 4px;
+}
+.chat-input-area {
+    padding: 10px;
+    background: var(--card-bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    gap: 8px;
+}
+.chat-input-area input {
+    flex: 1;
+    padding: 10px 14px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    background: var(--bg-body);
+    color: var(--text-color);
+    outline: none;
+}
+.chat-input-area button {
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chat-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: var(--primary);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 5px 15px rgba(37,99,235,0.3);
+    z-index: 999;
+}
+</style>
+
+<div class="chat-toggle" onclick="toggleChat()">
+    <i class="fas fa-comment-medical"></i>
+</div>
+
+<div class="chat-widget" id="chatWidget">
+    <div class="chat-header">
+        <span><i class="fas fa-robot"></i> NeoBot Assistant</span>
+        <i class="fas fa-times" onclick="toggleChat()"></i>
+    </div>
+    <div class="chat-body" id="chatBody">
+        <div class="chat-msg bot">Hello! I am NeoBot, your medical AI assistant. How can I help you today?</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="chatInput" placeholder="Ask about jaundice..." onkeypress="handleChatEnter(event)">
+        <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<script>
+const modalOverlay = document.getElementById("modalOverlay");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+
+let totalScans = 0;
+let positiveCases = 0;
+let todayScans = 0;
+
+function openModal(title, content){
+    modalTitle.innerHTML = title;
+    modalBody.innerHTML = content;
+    modalOverlay.classList.add("active");
+}
+
+function closeModal(){
+    modalOverlay.classList.remove("active");
+}
+
+window.onclick = function(e){
+    if(e.target === modalOverlay){
+        closeModal();
+    }
+};
+
+function toggleTheme(){
+    const body = document.body;
+    const icon = document.getElementById("theme-icon");
+
+    if(body.getAttribute("data-theme")==="dark"){
+        body.removeAttribute("data-theme");
+        icon.className = "fas fa-moon";
+    }else{
+        body.setAttribute("data-theme","dark");
+        icon.className = "fas fa-sun";
+    }
+}
+
+function toggleNotifications(){
+    document.getElementById("notificationPanel").classList.toggle("active");
+}
+
+function openBabyModal(){
+
+openModal("Baby Information Management",`
+
+<div class="form-grid">
+
+<div class="input-group">
+<label>Baby Name</label>
+<input type="text" placeholder="Enter baby name">
+</div>
+
+<div class="input-group">
+<label>Baby ID</label>
+<input type="text" placeholder="NEO-2026-001">
+</div>
+
+<div class="input-group">
+<label>Gender</label>
+<select>
+<option>Male</option>
+<option>Female</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Birth Date</label>
+<input type="date">
+</div>
+
+<div class="input-group">
+<label>Parent Name</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Phone Number</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Weight</label>
+<input type="text" placeholder="3.2 kg">
+</div>
+
+<div class="input-group">
+<label>Address</label>
+<input type="text">
+</div>
+
+<div class="input-group" style="grid-column:1/-1;">
+<label>Notes</label>
+<textarea rows="4"></textarea>
+</div>
+
+</div>
+
+<div class="modal-actions">
+<button class="action-btn secondary-btn" onclick="closeModal()">Cancel</button>
+<button class="action-btn" onclick="saveBaby()">Save Baby</button>
+</div>
+
+`);
+
+}
+
+function saveBaby(){
+
+const container = document.getElementById("historyContainer");
+
+container.innerHTML += `
+<div class="history-card" onclick="openHistoryDetail()">
+<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
+<h4>New Baby Profile</h4>
+<p style="color:var(--text-muted);margin:6px 0;">
+Scan Date: ${new Date().toLocaleDateString()}
+</p>
+<div style="display:flex;justify-content:space-between;">
+<span style="font-size:.85rem;">Status Pending</span>
+<span style="font-weight:600;">0%</span>
+</div>
+</div>
+`;
+
+closeModal();
+}
+
+function openUploadModal(){
+    document.getElementById("fileInput").click();
+}
+
+document.getElementById("fileInput").addEventListener("change",function(e){
+
+const file = e.target.files[0];
+
+if(file){
+
+const reader = new FileReader();
+
+reader.onload = function(event){
+
+document.getElementById("uploadedPreview").src = event.target.result;
+document.getElementById("uploadedPreview").style.display = "block";
+document.getElementById("originalPlaceholder").style.display = "none";
+
+document.getElementById("processingSection").style.display = "block";
+
+// Helper function to get CSRF token from Django cookies
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// --- START OF API INTEGRATION ---
+const formData = new FormData();
+formData.append('image', file);
+// You can dynamically get these values from a form later
+formData.append('age_days', 2); 
+formData.append('gestational_age', 39);
+
+fetch('/api/predict/', {
+    method: 'POST',
+    body: formData,
+    headers: {
+        'X-CSRFToken': getCookie('csrftoken') // REQUIRED FOR DJANGO AUTH
+    }
+})
+.then(response => response.json())
+.then(data => {
+    document.getElementById("processingSection").style.display = "none";
+    
+    if(data.status === "success") {
+        totalScans++;
+        todayScans++;
+        document.getElementById("totalScans").innerText = totalScans;
+        document.getElementById("todayScans").innerText = todayScans;
+        
+        // Update UI with REAL results
+        alert(`Prediction Success!\nBilirubin: ${data.predicted_bilirubin}\nRisk Zone: ${data.risk_zone}\nRecommendation: ${data.recommendation}`);
+        
+        // Example of updating your UI badges:
+        // if(data.risk_zone === "High Risk") { ... }
+    } else {
+        alert("Error: " + data.message);
+    }
+})
+.catch(error => {
+    document.getElementById("processingSection").style.display = "none";
+    alert("API Error: Make sure the Django server is running.");
+    console.error('Error:', error);
+});
+// --- END OF API INTEGRATION ---
+
+};
+
+reader.readAsDataURL(file);
+
+}
+
+});
+
+function openCamera(){
+
+openModal("Camera Access",`
+
+<div style="text-align:center;">
+
+<div class="placeholder-box" style="height:300px;">
+Live camera integration will connect here.
+</div>
+
+<div style="margin-top:1.5rem;">
+<button class="action-btn">
+<i class="fas fa-camera"></i>
+Capture Image
+</button>
+</div>
+
+</div>
+
+`);
+
+}
+
+function openAnalyticsModal(){
+
+openModal("Analytics Dashboard",`
+
+<div class="chart-container">
+<canvas id="analyticsChart"></canvas>
+</div>
+
+<div style="margin-top:2rem;" class="empty-state">
+<p style="color:var(--text-muted);">
+Analytics will dynamically update as scan data increases.
+</p>
+</div>
+
+`);
+
+setTimeout(()=>{
+
+new Chart(document.getElementById("analyticsChart"),{
+type:'bar',
+data:{
+labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+datasets:[{
+label:'Scans',
+data:[0,0,0,0,0,0,0]
+}]
+},
+options:{
+responsive:true,
+maintainAspectRatio:false
+}
+});
+
+},100);
+
+}
+
+function openResourcesModal(){
+
+openModal("Educational Resources",`
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<h4>Research Papers</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+AI and neonatal healthcare studies.
+</p>
+<button class="action-btn secondary-btn" onclick="openResearchModal()">
+Open Section
+</button>
+</div>
+
+<div class="resource-card">
+<h4>About Jaundice</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+Medical neonatal jaundice information.
+</p>
+<button class="action-btn secondary-btn" onclick="openAboutModal()">
+Open Section
+</button>
+</div>
+
+<div class="resource-card">
+<h4>Prevention Tips</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+Healthcare prevention guidelines.
+</p>
+<button class="action-btn secondary-btn" onclick="openTipsModal()">
+Open Section
+</button>
+</div>
+
+<div class="resource-card">
+<h4>FAQs</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+Clinical frequently asked questions.
+</p>
+<button class="action-btn secondary-btn" onclick="openFAQModal()">
+Open Section
+</button>
+</div>
+
+</div>
+
+`);
+
+}
+
+function openResearchModal(){
+
+openModal("Research Papers",`
+
+<img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1400&q=80" class="faq-image">
+
+<div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
+<input type="text" placeholder="Search research papers..." style="flex:1;padding:1rem;border-radius:14px;border:1px solid var(--border);background:var(--bg-body);">
+<select style="padding:1rem;border-radius:14px;border:1px solid var(--border);background:var(--bg-body);">
+<option>All Years</option>
+<option>2026</option>
+<option>2025</option>
+<option>2024</option>
+</select>
+</div>
+
+<div class="paper-list">
+
+<div class="paper-card">
+<div class="paper-top">
+<h3>AI-Based Sclera Analysis for Neonatal Jaundice</h3>
+<span style="font-weight:600;color:var(--primary);">2025</span>
+</div>
+<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
+A deep learning based framework developed for bilirubin estimation using neonatal sclera images. The study focuses on non-invasive jaundice detection and smartphone-assisted screening.
+</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+<small>Author: Dr. Emily Carter</small>
+<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
+Open Paper
+</a>
+</div>
+</div>
+
+<div class="paper-card">
+<div class="paper-top">
+<h3>Smartphone-Based Neonatal Monitoring</h3>
+<span style="font-weight:600;color:var(--primary);">2024</span>
+</div>
+<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
+Clinical validation of smartphone assisted neonatal jaundice screening systems with image processing and RGB based bilirubin estimation.
+</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+<small>Author: Dr. William Lee</small>
+<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
+Open Paper
+</a>
+</div>
+</div>
+
+<div class="paper-card">
+<div class="paper-top">
+<h3>Machine Learning for Early Neonatal Diagnosis</h3>
+<span style="font-weight:600;color:var(--primary);">2026</span>
+</div>
+<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
+Research focused on AI-assisted healthcare systems for rapid neonatal disease identification using computer vision and cloud analytics.
+</p>
+<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
+<small>Author: Dr. Sophia Green</small>
+<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
+Open Paper
+</a>
+</div>
+</div>
+
+</div>
+
+`);
+
+}
+
+
+function openAboutModal(){
+
+openModal("About Neonatal Jaundice",`
+
+<div class="info-scroll">
+
+<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1400&q=80" class="info-banner">
+
+<div class="info-section">
+<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80">
+<div class="info-content">
+<h3>What is Neonatal Jaundice?</h3>
+<p>
+Neonatal jaundice is a common condition in newborn babies that causes yellow discoloration of the skin and eyes. It happens because bilirubin levels increase in the blood after birth. In many newborns this condition is mild, but proper monitoring is important.
+</p>
+</div>
+</div>
+
+<div class="info-section">
+<img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80">
+<div class="info-content">
+<h3>Why Early Detection is Important</h3>
+<p>
+If jaundice becomes severe and is not treated on time, it can affect the baby’s nervous system and brain development. Early detection helps doctors begin treatment quickly and safely.
+</p>
+</div>
+</div>
+
+<div class="info-section">
+<img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80">
+<div class="info-content">
+<h3>How NeoScan AI Helps</h3>
+<p>
+NeoScan AI helps healthcare professionals by analyzing sclera images using artificial intelligence technology. The system supports fast screening and assists in identifying possible jaundice risk.
+</p>
+</div>
+</div>
+
+</div>
+
+`);
+
+}
+
+
+function openTipsModal(){
+
+openModal("Prevention Tips",`
+
+<div class="tip-grid">
+
+<div class="tip-card">
+<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1000&q=80">
+<div class="tip-content">
+<h3><i class="fas fa-sun"></i> Use Proper Lighting</h3>
+<p>
+Capture neonatal eye images in balanced natural light to improve AI analysis quality.
+</p>
+</div>
+</div>
+
+<div class="tip-card">
+<img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1000&q=80">
+<div class="tip-content">
+<h3><i class="fas fa-eye"></i> Clear Eye Visibility</h3>
+<p>
+Ensure the baby's sclera is clearly visible and avoid blurry or low quality images.
+</p>
+</div>
+</div>
+
+<div class="tip-card">
+<img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1000&q=80">
+<div class="tip-content">
+<h3><i class="fas fa-heart-pulse"></i> Feeding Support</h3>
+<p>
+Regular feeding helps reduce bilirubin accumulation and supports healthy newborn recovery.
+</p>
+</div>
+</div>
+
+<div class="tip-card">
+<img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80">
+<div class="tip-content">
+<h3><i class="fas fa-user-doctor"></i> Regular Checkups</h3>
+<p>
+Consult healthcare professionals regularly during the first week after birth.
+</p>
+</div>
+</div>
+
+</div>
+
+`);
+
+}
+
+
+
+function openFAQModal(){
+
+openModal("Frequently Asked Questions",`
+
+<img src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80" class="faq-image">
+
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span>What is neonatal jaundice?</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<p style="color:var(--text-muted);line-height:1.9;">
+Neonatal jaundice is a condition where bilirubin levels increase in newborn babies causing yellow discoloration of skin and eyes.
+</p>
+</div>
+</div>
+
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span>How does NeoScan AI work?</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<p style="color:var(--text-muted);line-height:1.9;">
+NeoScan AI analyzes neonatal sclera images using artificial intelligence and image processing technologies.
+</p>
+</div>
+</div>
+
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span>Is this system clinically approved?</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<p style="color:var(--text-muted);line-height:1.9;">
+The project currently supports AI-assisted screening and educational healthcare workflows.
+</p>
+</div>
+</div>
+
+<div class="accordion-item">
+<div class="accordion-header" onclick="toggleAccordion(this)">
+<span>Can smartphone images be used?</span>
+<i class="fas fa-chevron-down"></i>
+</div>
+<div class="accordion-body">
+<p style="color:var(--text-muted);line-height:1.9;">
+Yes, smartphone captured sclera images can be used if the lighting and image quality are good.
+</p>
+</div>
+</div>
+
+`);
+
+}
+
+function toggleAccordion(el){
+    el.parentElement.classList.toggle("active");
+}
+
+function openHistoryModal(){
+
+openModal("Patient History",`
+
+<div class="history-grid">
+
+<div class="history-card" onclick="openHistoryDetail()">
+<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80">
+<h4>Aarav Sharma</h4>
+<p style="color:var(--text-muted);margin:8px 0;">
+Scan Date: 24 Apr 2026
+</p>
+<div style="display:flex;justify-content:space-between;">
+<span>High Risk</span>
+<span style="font-weight:700;">89%</span>
+</div>
+</div>
+
+</div>
+
+`);
+
+}
+
+function openHistoryDetail(){
+
+openModal("Detailed Patient History",`
+
+<div class="preview-container">
+
+<div class="preview-box">
+<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=800&q=80">
+</div>
+
+<div class="preview-box">
+<div style="text-align:left;display:flex;flex-direction:column;gap:10px;">
+<div><strong>Baby Name:</strong> Aarav Sharma</div>
+<div><strong>Parent:</strong> Meera Sharma</div>
+<div><strong>Confidence:</strong> Awaiting backend analysis</div>
+<div><strong>RGB:</strong> Processing Pending</div>
+<div><strong>Timeline:</strong> 24 Apr 2026</div>
+</div>
+</div>
+
+</div>
+
+`);
+
+}
+
+function openSettingsModal(){
+
+openModal("System Settings",`
+
+<div class="resource-grid">
+
+<div class="resource-card">
+<h4>Profile Settings</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+Update doctor and hospital profile.
+</p>
+<button class="action-btn secondary-btn" onclick="openProfileSettings()">
+Open
+</button>
+</div>
+
+<div class="resource-card">
+<h4>Change Password</h4>
+<p style="color:var(--text-muted);margin:10px 0 1rem;">
+Manage account security credentials.
+</p>
+<button class="action-btn secondary-btn" onclick="openPasswordModal()">
+Open
+</button>
+</div>
+
+</div>
+
+`);
+
+}
+
+function openPasswordModal(){
+
+openModal("Change Password",`
+
+<div class="form-grid">
+
+<div class="input-group">
+<label>Current Password</label>
+<input type="password">
+</div>
+
+<div class="input-group">
+<label>New Password</label>
+<input type="password">
+</div>
+
+<div class="input-group">
+<label>Confirm Password</label>
+<input type="password">
+</div>
+
+</div>
+
+<div class="modal-actions">
+<button class="action-btn secondary-btn">Cancel</button>
+<button class="action-btn">Update Password</button>
+</div>
+
+`);
+
+}
+
+function openProfileSettings(){
+
+openModal("Profile Settings",`
+
+<div class="form-grid">
+
+<div class="input-group">
+<label>Profile Photo</label>
+<input type="file">
+</div>
+
+<div class="input-group">
+<label>Full Name</label>
+<input type="text" id="nameInput" value="Dr. John Doe">
+</div>
+
+<div class="input-group">
+<label>Email</label>
+<input type="email">
+</div>
+
+<div class="input-group">
+<label>Phone</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Address</label>
+<input type="text">
+</div>
+
+<div class="input-group">
+<label>Organization / Hospital</label>
+<input type="text">
+</div>
+
+</div>
+
+<div class="modal-actions">
+<button class="action-btn secondary-btn">Cancel</button>
+<button class="action-btn" onclick="updateProfile()">Save Changes</button>
+</div>
+
+`);
+
+}
+
+function updateProfile(){
+
+document.getElementById("profileName").innerText =
+document.getElementById("nameInput").value;
+
+closeModal();
+
+}
+
+new Chart(document.getElementById('weeklyChart'), {
+type: 'line',
+data: {
+labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
+datasets: [{
+label: 'Weekly Scans',
+data: [0,0,0,0,0,0,0],
+borderColor:'#2563eb',
+backgroundColor:'rgba(37,99,235,.1)',
+fill:true,
+tension:.4
+}]
+},
+options: {
+responsive:true,
+maintainAspectRatio:false,
+plugins:{
+legend:{
+display:false
+}
+},
+scales:{
+y:{
+beginAtZero:true
+},
+x:{
+grid:{
+display:false
+}
+}
+}
+}
+});
+
+const revealObserver = new IntersectionObserver(entries => {
+entries.forEach(entry => {
+if(entry.isIntersecting){
+entry.target.classList.add('active');
+}
+});
+},{
+threshold:.1
+});
+
+document.querySelectorAll('.fade-reveal').forEach(el=>{
+revealObserver.observe(el);
+});
+
+// --- CHATBOT LOGIC ---
+let chatHistory = [];
+
+function toggleChat() {
+    document.getElementById("chatWidget").classList.toggle("open");
+}
+
+function handleChatEnter(event) {
+    if (event.key === "Enter") {
+        sendChatMessage();
+    }
+}
+
+function sendChatMessage() {
+    const input = document.getElementById("chatInput");
+    const message = input.value.trim();
+    if (!message) return;
+    
+    const chatBody = document.getElementById("chatBody");
+    
+    // Add user message to UI
+    chatBody.innerHTML += `<div class="chat-msg user">${message}</div>`;
+    input.value = "";
+    
+    // Scroll to bottom
+    chatBody.scrollTop = chatBody.scrollHeight;
+    
+    // Add "Typing..." indicator
+    const typingId = "typing-" + Date.now();
+    chatBody.innerHTML += `<div class="chat-msg bot" id="${typingId}">Typing... <i class="fas fa-circle-notch fa-spin"></i></div>`;
+    chatBody.scrollTop = chatBody.scrollHeight;
+
+    // Call Backend API
+    fetch('/api/chat/', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie('csrftoken') // Function is already defined earlier
+        },
+        body: JSON.stringify({
+            message: message,
+            history: chatHistory
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        // Remove typing indicator
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+        
+        if (data.status === "success") {
+            const botReply = data.reply;
+            chatBody.innerHTML += `<div class="chat-msg bot">${botReply.replace(/\n/g, '<br>')}</div>`;
+            
+            // Save to history to maintain context
+            chatHistory.push({ role: "user", content: message });
+            chatHistory.push({ role: "assistant", content: botReply });
+        } else {
+            chatBody.innerHTML += `<div class="chat-msg bot" style="color:red;">Error: ${data.message}</div>`;
+        }
+        chatBody.scrollTop = chatBody.scrollHeight;
+    })
+    .catch(error => {
+        const typingEl = document.getElementById(typingId);
+        if (typingEl) typingEl.remove();
+        chatBody.innerHTML += `<div class="chat-msg bot" style="color:red;">Connection error. Make sure the server is running.</div>`;
+        console.error("Chat Error:", error);
+    });
+}
+// --- END CHATBOT LOGIC ---
+
+</script>
+
+</body>
+</html>

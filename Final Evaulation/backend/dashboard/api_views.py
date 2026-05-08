@@ -1,7 +1,7 @@
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from .ml_pipeline import preprocess_and_predict, get_clinical_risk, get_recommendation, extract_features_from_image
+from .ml_pipeline import preprocess_and_predict, get_clinical_risk, get_recommendation, extract_features_from_image, calculate_calibration_profile
 from .mongo_client import get_predictions_collection
 import traceback
 from datetime import datetime
@@ -18,8 +18,11 @@ def predict_bilirubin(request):
         image_file = request.FILES['image']
         image_bytes = image_file.read()
         
+        # Check for calibration profile
+        calibration_profile = request.session.get('calibration_profile', None)
+        
         # 1. OpenCV Preprocessing & Feature Extraction
-        extracted_features = extract_features_from_image(image_bytes)
+        extracted_features = extract_features_from_image(image_bytes, calibration_profile)
         
         r = extracted_features.get('R', 0)
         g = extracted_features.get('G', 0)
@@ -78,7 +81,9 @@ def predict_bilirubin(request):
             "predicted_bilirubin": round(predicted_bilirubin, 2),
             "risk_zone": risk_zone,
             "recommendation": recommendation,
-            "saved_to_db": "_id" in prediction_record
+            "saved_to_db": "_id" in prediction_record,
+            "roi_image": extracted_features.get('roi_image', ''),
+            "roi_overlay": extracted_features.get('roi_overlay', '')
         })
         
     except Exception as e:
@@ -89,6 +94,31 @@ def predict_bilirubin(request):
         }, status=400)
 
 from .chatbot import generate_chat_response
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def calibrate_lighting(request):
+    try:
+        if 'image' not in request.FILES:
+            return Response({"status": "error", "message": "No image provided"}, status=400)
+            
+        image_file = request.FILES['image']
+        image_bytes = image_file.read()
+        
+        profile = calculate_calibration_profile(image_bytes)
+        
+        # Save to session
+        request.session['calibration_profile'] = profile
+        
+        return Response({
+            "status": "success",
+            "profile": profile
+        })
+    except Exception as e:
+        return Response({
+            "status": "error",
+            "message": str(e)
+        }, status=400)
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])

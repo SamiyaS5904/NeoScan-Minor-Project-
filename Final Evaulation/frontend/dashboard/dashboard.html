@@ -850,6 +850,13 @@ h1,h2,h3,.logo-text{
 </li>
 
 <li class="nav-item">
+<a class="nav-link" onclick="openCalibrationModal()">
+<i class="fas fa-sliders-h"></i>
+<span>Calibration</span>
+</a>
+</li>
+
+<li class="nav-item">
 <a class="nav-link" onclick="openUploadModal()">
 <i class="fas fa-upload"></i>
 <span>Upload Detection</span>
@@ -1045,11 +1052,22 @@ Quick Scan
 
 <i class="fas fa-cloud-upload-alt upload-icon"></i>
 
-<h3>Upload Neonatal Eye Image</h3>
+<h3>Upload Neonatal Skin Image</h3>
 
 <p style="margin:.7rem 0 1.5rem;color:var(--text-muted);">
-Upload or capture sclera image for AI-based jaundice analysis.
+Upload or capture neonatal skin image for AI-based jaundice analysis.
 </p>
+
+<div style="background:var(--bg-body); border:1px solid var(--border); padding:1rem; border-radius:12px; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between;">
+    <div style="display:flex; align-items:center; gap:10px;">
+        <i class="fas fa-baby-carriage" style="font-size:1.5rem; color:var(--primary);"></i>
+        <div style="text-align:left;">
+            <div style="font-weight:600; font-size:0.9rem;">Current Patient: <span id="displayBabyName" style="color:var(--primary);">Pending...</span></div>
+            <div style="font-size:0.8rem; color:var(--text-muted);">Age: <span id="displayBabyAge">--</span> Days | Gestational Age: <span id="displayBabyGest">--</span> Weeks</div>
+        </div>
+    </div>
+    <button class="action-btn secondary-btn" style="padding:0.5rem 1rem; font-size:0.8rem;" onclick="openBabyModal(false)">Edit</button>
+</div>
 
 <div class="upload-actions">
 
@@ -1063,6 +1081,11 @@ Upload Image
 Camera
 </button>
 
+<button class="action-btn secondary-btn" onclick="openCalibrationModal()" id="calibrationBtn">
+<i class="fas fa-sliders"></i>
+Calibrate
+</button>
+
 <button class="action-btn secondary-btn" onclick="openBabyModal()">
 <i class="fas fa-plus"></i>
 New Baby
@@ -1073,7 +1096,7 @@ New Baby
 <input type="file" id="fileInput" accept="image/*" hidden>
 
 <div id="processingSection" style="display:none;margin-top:2rem;">
-<h4>Analyzing Sclera...</h4>
+<h4>Analyzing Skin ROI...</h4>
 <div class="loading-line"><span></span></div>
 </div>
 
@@ -1088,70 +1111,78 @@ Awaiting upload
 </div>
 
 <div class="preview-box">
-<div>Eye Crop Preview</div>
-<div class="placeholder-box">
-Backend eye crop preview
+<div>Skin ROI Preview</div>
+<div class="placeholder-box" id="roiPreviewPlaceholder">
+Actual selected skin region
 </div>
+<img id="roiPreviewImg" style="display:none;">
 </div>
 
 <div class="preview-box">
-<div>Sclera Segmentation</div>
-<div class="placeholder-box">
-Segmentation overlay pending
+<div>ROI Detection</div>
+<div class="placeholder-box" id="roiOverlayPlaceholder">
+Detection visualization pending
 </div>
-</div>
-
-</div>
-
+<img id="roiOverlayImg" style="display:none;">
 </div>
 
 </div>
 
-<div class="card fade-reveal">
+</div>
+
+</div>
+
+<div class="card fade-reveal" id="resultCard">
 
 <div class="card-title">
 Recent Detection Result
 </div>
 
-<div class="result-badge low-risk">
-<i class="fas fa-circle-check"></i>
-Awaiting backend analysis
+<div class="result-badge" id="riskBadge" style="background:#f1f5f9; color:#64748b;">
+<i class="fas fa-clock" id="riskIcon"></i>
+<span id="riskText">Awaiting backend analysis</span>
 </div>
 
-<div style="margin-bottom:1rem;">
-<div style="display:flex;justify-content:space-between;">
-<span style="color:var(--text-muted);font-size:.9rem;">Confidence Score</span>
-<span style="font-weight:600;">Pending</span>
+<div style="display:flex; flex-direction:column; align-items:center; margin: 1.5rem 0;">
+    <svg viewBox="0 0 200 110" style="width: 250px; max-width: 100%;">
+        <defs>
+            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stop-color="var(--success)" />
+                <stop offset="35%" stop-color="var(--success)" />
+                <stop offset="50%" stop-color="var(--warning)" />
+                <stop offset="65%" stop-color="var(--warning)" />
+                <stop offset="85%" stop-color="var(--danger)" />
+                <stop offset="100%" stop-color="var(--danger)" />
+            </linearGradient>
+        </defs>
+        <!-- Background track -->
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f0f2f5" stroke-width="20" stroke-linecap="round" />
+        <!-- Colored track -->
+        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradient)" stroke-width="20" stroke-linecap="round" />
+        
+        <!-- Needle -->
+        <g id="gaugeNeedle" style="transform-origin: 100px 100px; transform: rotate(-90deg); transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);">
+            <polygon points="96,100 104,100 100,25" fill="#333" />
+            <circle cx="100" cy="100" r="8" fill="#333" />
+        </g>
+    </svg>
+    <div style="display:flex; justify-content:space-between; width:250px; font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:-5px;">
+        <span>Low</span>
+        <span>Med</span>
+        <span>High</span>
+    </div>
 </div>
 
-<div class="progress-bar">
-<div class="progress-fill" id="confidenceFill"></div>
-</div>
+<div style="text-align:center; margin-bottom:1.5rem;">
+    <span style="font-size:0.9rem; color:var(--text-muted);">Predicted Bilirubin</span>
+    <div style="font-size:2.5rem; font-weight:800; color:var(--primary);" id="bilirubinValue">-- mg/dL</div>
 </div>
 
-<div class="preview-container">
-
-<div class="preview-box">
-<div>RGB Analysis</div>
-<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
-RGB values will appear after image processing.
+<div style="background:var(--bg-body); padding:1rem; border-radius:12px; border:1px solid var(--border);">
+<div style="font-weight:600; margin-bottom:5px;"><i class="fas fa-user-md" style="color:var(--primary);"></i> Recommendation</div>
+<p style="font-size:.9rem;color:var(--text-muted);margin:0;" id="recommendationText">
+Submit an image to receive clinical recommendation.
 </p>
-</div>
-
-<div class="preview-box">
-<div>Bilirubin Indicator</div>
-<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
-Awaiting backend analysis.
-</p>
-</div>
-
-<div class="preview-box">
-<div>AI Insights</div>
-<p style="font-size:.9rem;color:var(--text-muted);margin-top:1rem;">
-Lighting and sclera quality insights will appear here.
-</p>
-</div>
-
 </div>
 
 </div>
@@ -1208,9 +1239,9 @@ AI
 </div>
 
 <div>
-<div style="font-weight:700;">Random Forest Model</div>
+<div style="font-weight:700;">XGBoost Regression Model</div>
 <div style="font-size:.85rem;color:var(--text-muted);">
-Dataset: Awaiting final training dataset
+Model Validated | Ready for Inference
 </div>
 </div>
 
@@ -1219,18 +1250,18 @@ Dataset: Awaiting final training dataset
 <div style="display:flex;flex-direction:column;gap:12px;font-size:.9rem;">
 
 <div style="display:flex;justify-content:space-between;">
-<span>Training Status</span>
-<span style="font-weight:600;">In Progress</span>
+<span>Validation Status</span>
+<span style="font-weight:600;color:var(--success);">Completed</span>
 </div>
 
 <div style="display:flex;justify-content:space-between;">
-<span>Confusion Matrix</span>
-<span style="font-weight:600;">Pending Validation</span>
+<span>Risk Classification</span>
+<span style="font-weight:600;">Bhutani-style Logic</span>
 </div>
 
 <div style="display:flex;justify-content:space-between;">
 <span>Backend Integration</span>
-<span style="font-weight:600;">Development Stage</span>
+<span style="font-weight:600;color:var(--success);">Connected</span>
 </div>
 
 </div>
@@ -1485,90 +1516,92 @@ function toggleNotifications(){
     document.getElementById("notificationPanel").classList.toggle("active");
 }
 
-function openBabyModal(){
+function openBabyModal(isOnboarding = false){
 
-openModal("Baby Information Management",`
+openModal("Patient Information Setup",`
 
 <div class="form-grid">
 
 <div class="input-group">
 <label>Baby Name</label>
-<input type="text" placeholder="Enter baby name">
-</div>
-
-<div class="input-group">
-<label>Baby ID</label>
-<input type="text" placeholder="NEO-2026-001">
+<input type="text" id="bName" placeholder="Enter baby name" value="Neonatal Patient 1">
 </div>
 
 <div class="input-group">
 <label>Gender</label>
-<select>
-<option>Male</option>
-<option>Female</option>
+<select id="bGender" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border);">
+<option value="Male">Male</option>
+<option value="Female">Female</option>
 </select>
 </div>
 
 <div class="input-group">
-<label>Birth Date</label>
-<input type="date">
+<label>Date of Birth</label>
+<input type="date" id="bDOB">
 </div>
 
 <div class="input-group">
-<label>Parent Name</label>
-<input type="text">
+<label>Time of Birth</label>
+<input type="time" id="bTOB">
 </div>
 
 <div class="input-group">
-<label>Phone Number</label>
-<input type="text">
+<label>Age (Days)</label>
+<input type="number" id="bAge" placeholder="e.g. 2">
 </div>
 
 <div class="input-group">
-<label>Weight</label>
-<input type="text" placeholder="3.2 kg">
-</div>
-
-<div class="input-group">
-<label>Address</label>
-<input type="text">
+<label>Gestational Age (Weeks)</label>
+<input type="number" id="bGestAge" placeholder="e.g. 39">
 </div>
 
 <div class="input-group" style="grid-column:1/-1;">
 <label>Notes</label>
-<textarea rows="4"></textarea>
+<textarea rows="2" placeholder="Optional clinical notes..."></textarea>
 </div>
 
 </div>
 
 <div class="modal-actions">
-<button class="action-btn secondary-btn" onclick="closeModal()">Cancel</button>
-<button class="action-btn" onclick="saveBaby()">Save Baby</button>
+<button class="action-btn" onclick="saveBaby(${isOnboarding})">Save & Continue</button>
 </div>
 
 `);
 
 }
 
-function saveBaby(){
+function saveBaby(isOnboarding){
+    const name = document.getElementById("bName").value || "Unknown";
+    const gender = document.getElementById("bGender").value || "Unknown";
+    const dob = document.getElementById("bDOB").value || "--";
+    const tob = document.getElementById("bTOB").value || "--";
+    const age = document.getElementById("bAge").value || "2";
+    const gestAge = document.getElementById("bGestAge").value || "39";
+    
+    sessionStorage.setItem("babyName", name);
+    sessionStorage.setItem("babyGender", gender);
+    sessionStorage.setItem("babyDOB", dob);
+    sessionStorage.setItem("babyTOB", tob);
+    sessionStorage.setItem("babyAge", age);
+    sessionStorage.setItem("babyGest", gestAge);
+    sessionStorage.setItem("babyConfigured", "true");
+    
+    updateBabyUI();
+    closeModal();
+    
+    if (isOnboarding) {
+        setTimeout(() => {
+            openCalibrationModal(true);
+        }, 500);
+    }
+}
 
-const container = document.getElementById("historyContainer");
-
-container.innerHTML += `
-<div class="history-card" onclick="openHistoryDetail()">
-<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
-<h4>New Baby Profile</h4>
-<p style="color:var(--text-muted);margin:6px 0;">
-Scan Date: ${new Date().toLocaleDateString()}
-</p>
-<div style="display:flex;justify-content:space-between;">
-<span style="font-size:.85rem;">Status Pending</span>
-<span style="font-weight:600;">0%</span>
-</div>
-</div>
-`;
-
-closeModal();
+function updateBabyUI() {
+    if(sessionStorage.getItem("babyConfigured") === "true") {
+        document.getElementById("displayBabyName").innerText = sessionStorage.getItem("babyName");
+        document.getElementById("displayBabyAge").innerText = sessionStorage.getItem("babyAge");
+        document.getElementById("displayBabyGest").innerText = sessionStorage.getItem("babyGest") + " Wks | " + (sessionStorage.getItem("babyGender") || "");
+    }
 }
 
 function openUploadModal(){
@@ -1607,12 +1640,81 @@ function getCookie(name) {
     return cookieValue;
 }
 
+function openCalibrationModal(isOnboarding = false){
+
+openModal("One-Tap Environment Calibration",`
+
+<div style="text-align:center;">
+<p style="color:var(--text-muted);margin-bottom:20px;">
+For consistent results, please upload or capture an image of a white or gray card in the current lighting environment.
+</p>
+
+<div class="upload-area" id="calib-drop-zone" style="margin-bottom: 20px;">
+<i class="fas fa-file-image upload-icon"></i>
+<h3>Upload Calibration Card</h3>
+<p style="margin:.7rem 0;color:var(--text-muted);">Use a neutral gray or white reference.</p>
+</div>
+
+<input type="file" id="calibFileInput" accept="image/*" hidden>
+
+<div id="calibProcessing" style="display:none;margin-top:2rem;">
+<h4>Calibrating Lighting...</h4>
+<div class="loading-line"><span></span></div>
+</div>
+
+<div class="modal-actions" style="justify-content:center;">
+<button class="action-btn" onclick="document.getElementById('calibFileInput').click()">
+<i class="fas fa-upload"></i> Upload Card
+</button>
+</div>
+
+</div>
+`);
+
+document.getElementById("calibFileInput").addEventListener("change", function(e) {
+    const file = e.target.files[0];
+    if (file) {
+        document.getElementById("calibProcessing").style.display = "block";
+        const formData = new FormData();
+        formData.append('image', file);
+        
+        fetch('/api/calibrate/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        })
+        .then(res => res.json())
+        .then(data => {
+            document.getElementById("calibProcessing").style.display = "none";
+            if (data.status === "success") {
+                alert("Calibration Successful! Profile saved for this session.");
+                document.getElementById("calibrationBtn").innerHTML = '<i class="fas fa-check-circle" style="color:var(--success)"></i> Calibrated';
+                closeModal();
+            } else {
+                alert("Error: " + data.message);
+            }
+        })
+        .catch(err => {
+            document.getElementById("calibProcessing").style.display = "none";
+            alert("API Error.");
+        });
+    }
+});
+
+}
+
 // --- START OF API INTEGRATION ---
 const formData = new FormData();
 formData.append('image', file);
-// You can dynamically get these values from a form later
-formData.append('age_days', 2); 
-formData.append('gestational_age', 39);
+
+// Get dynamic metadata from session storage
+const ageDays = sessionStorage.getItem('babyAge') || 2;
+const gestAge = sessionStorage.getItem('babyGest') || 39;
+
+formData.append('age_days', ageDays); 
+formData.append('gestational_age', gestAge);
 
 fetch('/api/predict/', {
     method: 'POST',
@@ -1631,11 +1733,48 @@ fetch('/api/predict/', {
         document.getElementById("totalScans").innerText = totalScans;
         document.getElementById("todayScans").innerText = todayScans;
         
-        // Update UI with REAL results
-        alert(`Prediction Success!\nBilirubin: ${data.predicted_bilirubin}\nRisk Zone: ${data.risk_zone}\nRecommendation: ${data.recommendation}`);
+        // Update Result Card
+        document.getElementById("bilirubinValue").innerText = data.predicted_bilirubin + " mg/dL";
+        document.getElementById("recommendationText").innerText = data.recommendation;
         
-        // Example of updating your UI badges:
-        // if(data.risk_zone === "High Risk") { ... }
+        const riskBadge = document.getElementById("riskBadge");
+        const riskText = document.getElementById("riskText");
+        const riskIcon = document.getElementById("riskIcon");
+        
+        riskBadge.className = "result-badge"; // Reset classes
+        if (data.risk_zone === "Low Risk") {
+            riskBadge.style.background = "#dcfce7";
+            riskBadge.style.color = "#16a34a";
+            riskIcon.className = "fas fa-check-circle";
+        } else if (data.risk_zone === "Intermediate Risk") {
+            riskBadge.style.background = "#fef08a";
+            riskBadge.style.color = "#ca8a04";
+            riskIcon.className = "fas fa-exclamation-triangle";
+        } else {
+            riskBadge.style.background = "#fee2e2";
+            riskBadge.style.color = "#ef4444";
+            riskIcon.className = "fas fa-exclamation-circle";
+        }
+        riskText.innerText = data.risk_zone;
+        
+        // Animate the gauge needle
+        let bili = parseFloat(data.predicted_bilirubin);
+        bili = Math.max(0, Math.min(25, bili)); // Clamp between 0 and 25
+        let angle = (bili / 25) * 180 - 90;
+        document.getElementById("gaugeNeedle").style.transform = "rotate(" + angle + "deg)";
+        
+        // Update ROI Images if backend returns them
+        if (data.roi_image) {
+            document.getElementById("roiPreviewImg").src = "data:image/jpeg;base64," + data.roi_image;
+            document.getElementById("roiPreviewImg").style.display = "block";
+            document.getElementById("roiPreviewPlaceholder").style.display = "none";
+        }
+        if (data.roi_overlay) {
+            document.getElementById("roiOverlayImg").src = "data:image/jpeg;base64," + data.roi_overlay;
+            document.getElementById("roiOverlayImg").style.display = "block";
+            document.getElementById("roiOverlayPlaceholder").style.display = "none";
+        }
+        
     } else {
         alert("Error: " + data.message);
     }
@@ -2289,6 +2428,19 @@ function sendChatMessage() {
     });
 }
 // --- END CHATBOT LOGIC ---
+
+// --- STARTUP LOGIC ---
+window.onload = function() {
+    if (!sessionStorage.getItem("babyConfigured")) {
+        // First time user login -> Onboarding flow
+        setTimeout(() => {
+            openBabyModal(true);
+        }, 300);
+    } else {
+        updateBabyUI();
+    }
+}
+// --- END STARTUP LOGIC ---
 
 </script>
 

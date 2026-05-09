@@ -234,6 +234,7 @@ h1,h2,h3,.logo-text{
     flex-grow:1;
     margin-left:var(--sidebar-width);
     padding:2rem;
+    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
 }
 
 .top-header{
@@ -802,6 +803,17 @@ h1,h2,h3,.logo-text{
     }
 }
 
+.sidebar {
+    transition: transform 0.3s ease-in-out;
+}
+
+.sidebar.collapsed {
+    transform: translateX(-100%);
+    position: absolute;
+    height: 100%;
+    z-index: 1000;
+}
+
 @media(max-width:768px){
 
     .top-header{
@@ -850,53 +862,48 @@ h1,h2,h3,.logo-text{
 </li>
 
 <li class="nav-item">
-<a class="nav-link" onclick="openCalibrationModal()">
-<i class="fas fa-sliders-h"></i>
-<span>Calibration</span>
-</a>
-</li>
-
-<li class="nav-item">
 <a class="nav-link" onclick="openUploadModal()">
-<i class="fas fa-upload"></i>
-<span>Upload Detection</span>
+<i class="fas fa-plus-circle"></i>
+<span>New Scan</span>
 </a>
 </li>
 
 <li class="nav-item">
 <a class="nav-link" onclick="openBabyModal()">
-<i class="fas fa-baby"></i>
-<span>Baby Info</span>
+<i class="fas fa-users"></i>
+<span>Patients</span>
 </a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" onclick="openHistoryModal()">
-<i class="fas fa-clock-rotate-left"></i>
-<span>History</span>
+<a class="nav-link" onclick="openDoctorPanel()">
+<i class="fas fa-user-md"></i>
+<span>Doctor Panel</span>
 </a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" onclick="openAnalyticsModal()">
-<i class="fas fa-chart-line"></i>
-<span>Analytics</span>
+<a class="nav-link" onclick="openReports()">
+<i class="fas fa-file-medical-alt"></i>
+<span>Reports</span>
 </a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" onclick="openResourcesModal()">
-<i class="fas fa-book-medical"></i>
-<span>Resources</span>
+<a class="nav-link" onclick="toggleNotifications()">
+<i class="fas fa-bell"></i>
+<span>Notifications</span>
 </a>
 </li>
 
 <li class="nav-item">
-<a class="nav-link" onclick="openSettingsModal()">
-<i class="fas fa-cog"></i>
-<span>Settings</span>
+<a class="nav-link" onclick="openAdminPanel()">
+<i class="fas fa-user-shield"></i>
+<span>Admin Portal</span>
 </a>
 </li>
+
+
 
 <li class="nav-item">
     <a href="{% url 'logout' %}" class="nav-link logout">
@@ -912,9 +919,14 @@ h1,h2,h3,.logo-text{
 
 <header class="top-header">
 
+<div style="display:flex; align-items:center;">
+<button class="icon-btn" onclick="toggleSidebar()" style="margin-right:15px; font-size:1.5rem; background:transparent; border:none; color:var(--text-main); cursor:pointer;">
+<i class="fas fa-bars"></i>
+</button>
 <div>
 <h1 style="font-size:1.7rem;">Welcome back, Dr. John</h1>
 <p style="color:var(--text-muted);margin-top:4px;">NeoScan AI neonatal jaundice monitoring dashboard.</p>
+</div>
 </div>
 
 <div class="header-actions">
@@ -1062,7 +1074,7 @@ Upload or capture neonatal skin image for AI-based jaundice analysis.
     <div style="display:flex; align-items:center; gap:10px;">
         <i class="fas fa-baby-carriage" style="font-size:1.5rem; color:var(--primary);"></i>
         <div style="text-align:left;">
-            <div style="font-weight:600; font-size:0.9rem;">Current Patient: <span id="displayBabyName" style="color:var(--primary);">Pending...</span></div>
+            <div style="font-weight:600; font-size:0.9rem;">Active Detection Session: <span id="displayBabyName" style="color:var(--primary);">Pending...</span></div>
             <div style="font-size:0.8rem; color:var(--text-muted);">Age: <span id="displayBabyAge">--</span> Days | Gestational Age: <span id="displayBabyGest">--</span> Weeks</div>
         </div>
     </div>
@@ -1130,7 +1142,33 @@ Detection visualization pending
 
 </div>
 
+<!-- Baby History moved to left column -->
+<div class="card fade-reveal" style="margin-top: 1.5rem;">
+
+<div class="card-title">
+Baby History
+<button class="action-btn secondary-btn" onclick="openHistoryModal()">
+View All
+</button>
 </div>
+
+<div class="history-grid" id="historyContainer">
+
+<div class="history-card">
+<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
+<h4>History Empty</h4>
+<p style="color:var(--text-muted);margin-top:6px;">
+Patient scan history will appear here after uploads.
+</p>
+</div>
+
+</div>
+
+</div>
+
+</div> <!-- END LEFT COLUMN -->
+
+<div> <!-- START RIGHT COLUMN -->
 
 <div class="card fade-reveal" id="resultCard">
 
@@ -1178,155 +1216,29 @@ Recent Detection Result
     <div style="font-size:2.5rem; font-weight:800; color:var(--primary);" id="bilirubinValue">-- mg/dL</div>
 </div>
 
-<div style="background:var(--bg-body); padding:1rem; border-radius:12px; border:1px solid var(--border);">
+<div style="background:var(--bg-body); padding:1rem; border-radius:12px; border:1px solid var(--border); margin-bottom:1rem;">
 <div style="font-weight:600; margin-bottom:5px;"><i class="fas fa-user-md" style="color:var(--primary);"></i> Recommendation</div>
 <p style="font-size:.9rem;color:var(--text-muted);margin:0;" id="recommendationText">
 Submit an image to receive clinical recommendation.
 </p>
 </div>
 
+<div id="highRiskAlert" style="display:none; background:#fee2e2; padding:1rem; border-radius:12px; border:1px solid #ef4444; margin-bottom:1rem; text-align:center;">
+    <div style="color:#ef4444; font-weight:800; font-size:1.1rem; margin-bottom:5px;">
+        <i class="fas fa-triangle-exclamation"></i> HIGH RISK CASE DETECTED
+    </div>
+    <div style="color:#ef4444; font-size:0.9rem; font-weight:600;">Immediate pediatric review recommended.</div>
 </div>
 
-<div class="card fade-reveal">
-
-<div class="card-title">
-Baby History
-<button class="action-btn secondary-btn" onclick="openHistoryModal()">
-View All
+<button class="action-btn" id="downloadReportBtn" style="width:100%; justify-content:center; display:none;" onclick="downloadPDFReport()">
+    <i class="fas fa-file-pdf"></i> Download PDF Report
 </button>
-</div>
-
-<div class="history-grid" id="historyContainer">
-
-<div class="history-card">
-<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
-<h4>History Empty</h4>
-<p style="color:var(--text-muted);margin-top:6px;">
-Patient scan history will appear here after uploads.
-</p>
-</div>
 
 </div>
 
-</div>
+</div> <!-- END RIGHT COLUMN -->
 
-</div>
-
-<div>
-
-<div class="card fade-reveal">
-
-<div class="card-title">
-Analytics Overview
-</div>
-
-<div class="chart-container">
-<canvas id="weeklyChart"></canvas>
-</div>
-
-</div>
-
-<div class="card fade-reveal">
-
-<div class="card-title">
-Model Information
-</div>
-
-<div style="display:flex;gap:1rem;align-items:center;margin-bottom:1.2rem;">
-
-<div style="width:70px;height:70px;border-radius:50%;border:6px solid var(--primary-light);border-top-color:var(--primary);display:flex;align-items:center;justify-content:center;font-weight:700;">
-AI
-</div>
-
-<div>
-<div style="font-weight:700;">XGBoost Regression Model</div>
-<div style="font-size:.85rem;color:var(--text-muted);">
-Model Validated | Ready for Inference
-</div>
-</div>
-
-</div>
-
-<div style="display:flex;flex-direction:column;gap:12px;font-size:.9rem;">
-
-<div style="display:flex;justify-content:space-between;">
-<span>Validation Status</span>
-<span style="font-weight:600;color:var(--success);">Completed</span>
-</div>
-
-<div style="display:flex;justify-content:space-between;">
-<span>Risk Classification</span>
-<span style="font-weight:600;">Bhutani-style Logic</span>
-</div>
-
-<div style="display:flex;justify-content:space-between;">
-<span>Backend Integration</span>
-<span style="font-weight:600;color:var(--success);">Connected</span>
-</div>
-
-</div>
-
-</div>
-
-<div class="card fade-reveal">
-
-<div class="card-title">
-Resources
-</div>
-
-<div class="resource-grid">
-
-<div class="resource-card">
-<i class="fas fa-book-medical" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
-<h4>Research Papers</h4>
-<p style="color:var(--text-muted);margin:8px 0 1rem;">
-Clinical and AI-based neonatal jaundice studies.
-</p>
-<button class="action-btn secondary-btn" onclick="openResearchModal()">
-Open
-</button>
-</div>
-
-<div class="resource-card">
-<i class="fas fa-circle-info" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
-<h4>About Jaundice</h4>
-<p style="color:var(--text-muted);margin:8px 0 1rem;">
-Medical overview and neonatal information.
-</p>
-<button class="action-btn secondary-btn" onclick="openAboutModal()">
-Open
-</button>
-</div>
-
-<div class="resource-card">
-<i class="fas fa-shield-heart" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
-<h4>Prevention Tips</h4>
-<p style="color:var(--text-muted);margin:8px 0 1rem;">
-Guidelines and healthcare recommendations.
-</p>
-<button class="action-btn secondary-btn" onclick="openTipsModal()">
-Open
-</button>
-</div>
-
-<div class="resource-card">
-<i class="fas fa-question-circle" style="font-size:1.6rem;color:var(--primary);margin-bottom:1rem;"></i>
-<h4>FAQs</h4>
-<p style="color:var(--text-muted);margin:8px 0 1rem;">
-Frequently asked clinical questions.
-</p>
-<button class="action-btn secondary-btn" onclick="openFAQModal()">
-Open
-</button>
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
+</div> <!-- END DASHBOARD GRID -->
 
 </main>
 
@@ -1516,6 +1428,34 @@ function toggleNotifications(){
     document.getElementById("notificationPanel").classList.toggle("active");
 }
 
+function toggleSidebar() {
+    const sidebar = document.querySelector('.sidebar');
+    const mainContent = document.querySelector('.main-content');
+    
+    if (sidebar.style.transform === 'translateX(-100%)' || sidebar.classList.contains('collapsed')) {
+        sidebar.style.transform = 'translateX(0)';
+        sidebar.classList.remove('collapsed');
+        mainContent.style.marginLeft = 'var(--sidebar-width)';
+        mainContent.style.width = 'auto';
+    } else {
+        sidebar.style.transform = 'translateX(-100%)';
+        sidebar.classList.add('collapsed');
+        mainContent.style.marginLeft = '0';
+        mainContent.style.width = '100%';
+    }
+}
+
+function calculateAgeDays() {
+    const dobValue = document.getElementById("bDOB").value;
+    if (dobValue) {
+        const dobDate = new Date(dobValue);
+        const today = new Date();
+        const diffTime = Math.abs(today - dobDate);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        document.getElementById("bAge").value = diffDays;
+    }
+}
+
 function openBabyModal(isOnboarding = false){
 
 openModal("Patient Information Setup",`
@@ -1528,6 +1468,25 @@ openModal("Patient Information Setup",`
 </div>
 
 <div class="input-group">
+<label>Assigned Doctor</label>
+<select id="bDoctor" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border);">
+<option value="Dr. Sharma">Dr. Sharma</option>
+<option value="Dr. Kaur">Dr. Kaur</option>
+<option value="Dr. Singh">Dr. Singh</option>
+</select>
+</div>
+
+<div class="input-group">
+<label>Hospital ID</label>
+<input type="text" id="bHospitalID" placeholder="e.g. HOSP-1024">
+</div>
+
+<div class="input-group">
+<label>Parent Contact</label>
+<input type="text" id="bParentContact" placeholder="Phone Number">
+</div>
+
+<div class="input-group">
 <label>Gender</label>
 <select id="bGender" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border);">
 <option value="Male">Male</option>
@@ -1537,12 +1496,7 @@ openModal("Patient Information Setup",`
 
 <div class="input-group">
 <label>Date of Birth</label>
-<input type="date" id="bDOB">
-</div>
-
-<div class="input-group">
-<label>Time of Birth</label>
-<input type="time" id="bTOB">
+<input type="date" id="bDOB" onchange="calculateAgeDays()">
 </div>
 
 <div class="input-group">
@@ -1572,16 +1526,20 @@ openModal("Patient Information Setup",`
 
 function saveBaby(isOnboarding){
     const name = document.getElementById("bName").value || "Unknown";
-    const gender = document.getElementById("bGender").value || "Unknown";
-    const dob = document.getElementById("bDOB").value || "--";
-    const tob = document.getElementById("bTOB").value || "--";
+    const doctor = document.getElementById("bDoctor") ? document.getElementById("bDoctor").value : "Unassigned";
+    const hospital = document.getElementById("bHospitalID") ? document.getElementById("bHospitalID").value : "Unknown";
+    const contact = document.getElementById("bParentContact") ? document.getElementById("bParentContact").value : "Unknown";
+    const gender = document.getElementById("bGender") ? document.getElementById("bGender").value : "Unknown";
+    const dob = document.getElementById("bDOB") ? document.getElementById("bDOB").value : "--";
     const age = document.getElementById("bAge").value || "2";
     const gestAge = document.getElementById("bGestAge").value || "39";
     
     sessionStorage.setItem("babyName", name);
+    sessionStorage.setItem("babyDoctor", doctor);
+    sessionStorage.setItem("babyHospital", hospital);
+    sessionStorage.setItem("babyContact", contact);
     sessionStorage.setItem("babyGender", gender);
     sessionStorage.setItem("babyDOB", dob);
-    sessionStorage.setItem("babyTOB", tob);
     sessionStorage.setItem("babyAge", age);
     sessionStorage.setItem("babyGest", gestAge);
     sessionStorage.setItem("babyConfigured", "true");
@@ -1642,6 +1600,11 @@ function getCookie(name) {
 
 function openCalibrationModal(isOnboarding = false){
 
+if (localStorage.getItem("hasCalibrated") === "true") {
+    alert("System Calibration is already set up for this workspace. No further calibration is required.");
+    return;
+}
+
 openModal("One-Tap Environment Calibration",`
 
 <div style="text-align:center;">
@@ -1689,6 +1652,7 @@ document.getElementById("calibFileInput").addEventListener("change", function(e)
         .then(data => {
             document.getElementById("calibProcessing").style.display = "none";
             if (data.status === "success") {
+                localStorage.setItem("hasCalibrated", "true");
                 alert("Calibration Successful! Profile saved for this session.");
                 document.getElementById("calibrationBtn").innerHTML = '<i class="fas fa-check-circle" style="color:var(--success)"></i> Calibrated';
                 closeModal();
@@ -1742,6 +1706,9 @@ fetch('/api/predict/', {
         const riskIcon = document.getElementById("riskIcon");
         
         riskBadge.className = "result-badge"; // Reset classes
+        document.getElementById("highRiskAlert").style.display = "none";
+        document.getElementById("downloadReportBtn").style.display = "flex";
+        
         if (data.risk_zone === "Low Risk") {
             riskBadge.style.background = "#dcfce7";
             riskBadge.style.color = "#16a34a";
@@ -1754,8 +1721,14 @@ fetch('/api/predict/', {
             riskBadge.style.background = "#fee2e2";
             riskBadge.style.color = "#ef4444";
             riskIcon.className = "fas fa-exclamation-circle";
+            document.getElementById("highRiskAlert").style.display = "block";
+            addNotification("High Risk Alert", "Immediate review recommended.", "danger");
         }
         riskText.innerText = data.risk_zone;
+        
+        // Add PDF data to window for printing
+        window.latestReportData = data;
+
         
         // Animate the gauge needle
         let bili = parseFloat(data.predicted_bilirubin);
@@ -1775,6 +1748,9 @@ fetch('/api/predict/', {
             document.getElementById("roiOverlayPlaceholder").style.display = "none";
         }
         
+        addNotification("Detection Completed", "Result ready.", "success");
+        addNotification("Report Ready", "Professional report available.", "primary");
+        
     } else {
         alert("Error: " + data.message);
     }
@@ -1793,6 +1769,117 @@ reader.readAsDataURL(file);
 }
 
 });
+
+function addNotification(title, msg, type) {
+    const panel = document.getElementById("notificationPanel");
+    let color = "var(--primary)";
+    let icon = "fa-info-circle";
+    if (type === "success") { color = "var(--success)"; icon = "fa-check-circle"; }
+    else if (type === "danger") { color = "var(--danger)"; icon = "fa-triangle-exclamation"; }
+    
+    const html = `<div class="notification-item">
+        <i class="fas ${icon}" style="color:${color};margin-top:4px;"></i>
+        <div>
+        <div style="font-weight:600;">${title}</div>
+        <small style="color:var(--text-muted);">${msg}</small>
+        </div>
+    </div>`;
+    
+    panel.innerHTML = html + panel.innerHTML;
+    // Show dot
+    document.querySelector('.notification-dot').style.display = 'block';
+}
+
+function downloadPDFReport() {
+    if(!window.latestReportData) return;
+    const data = window.latestReportData;
+    
+    let printWin = window.open('', '', 'width=800,height=900');
+    printWin.document.write(`
+        <html>
+        <head>
+            <title>NeoScan AI - Clinical Report</title>
+            <style>
+                body { font-family: 'Arial', sans-serif; padding: 40px; color: #333; line-height: 1.6; }
+                .header { text-align: center; border-bottom: 2px solid #2563eb; padding-bottom: 20px; margin-bottom: 30px; }
+                .header h1 { color: #2563eb; margin: 0; }
+                .section { margin-bottom: 30px; }
+                .section h3 { background: #f1f5f9; padding: 10px; border-left: 4px solid #2563eb; margin-top:0; }
+                .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+                table, th, td { border: 1px solid #ddd; }
+                th, td { padding: 12px; text-align: left; }
+                th { background-color: #f8fafc; }
+                .risk-high { color: #ef4444; font-weight: bold; }
+                .risk-low { color: #16a34a; font-weight: bold; }
+                .risk-med { color: #ca8a04; font-weight: bold; }
+                .images img { width: 100%; border-radius: 8px; border: 1px solid #ddd; }
+                .footer { text-align: center; font-size: 0.8rem; color: #666; margin-top: 50px; border-top: 1px solid #ddd; padding-top: 20px; }
+            </style>
+        </head>
+        <body>
+            <div class="header">
+                <h1>NeoScan AI</h1>
+                <h2>Neonatal Jaundice Clinical Report</h2>
+                <p>Date: ${new Date().toLocaleString()}</p>
+                <p><strong>Assigned Doctor:</strong> ${sessionStorage.getItem('babyDoctor') || 'Unassigned'}</p>
+            </div>
+            
+            <div class="section">
+                <h3>Patient Details</h3>
+                <table>
+                    <tr><th>Baby Name</th><td>${sessionStorage.getItem('babyName') || 'Unknown'}</td><th>Gender</th><td>${sessionStorage.getItem('babyGender') || 'Unknown'}</td></tr>
+                    <tr><th>Age (Days)</th><td>${sessionStorage.getItem('babyAge') || '--'}</td><th>Gestational Age</th><td>${sessionStorage.getItem('babyGest') || '--'} Weeks</td></tr>
+                    <tr><th>Date of Birth</th><td>${sessionStorage.getItem('babyDOB') || '--'}</td><th>Hospital ID</th><td>${sessionStorage.getItem('babyHospital') || '--'}</td></tr>
+                    <tr><th>Parent Contact</th><td colspan="3">${sessionStorage.getItem('babyContact') || '--'}</td></tr>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h3>AI Analysis Results</h3>
+                <table>
+                    <tr>
+                        <th style="width:50%">Predicted Bilirubin Level</th>
+                        <td style="font-size:1.2rem; font-weight:bold;">${data.predicted_bilirubin} mg/dL</td>
+                    </tr>
+                    <tr>
+                        <th>Risk Zone</th>
+                        <td class="${data.risk_zone.includes('High') ? 'risk-high' : data.risk_zone.includes('Low') ? 'risk-low' : 'risk-med'}">
+                            ${data.risk_zone}
+                        </td>
+                    </tr>
+                    <tr>
+                        <th>Clinical Recommendation</th>
+                        <td>${data.recommendation}</td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="section">
+                <h3>Skin ROI & Detection Visualization</h3>
+                <div class="grid images">
+                    <div>
+                        <p style="font-weight:bold; text-align:center;">Extracted Skin ROI</p>
+                        ${data.roi_image ? `<img src="data:image/jpeg;base64,${data.roi_image}">` : '<p>No image available</p>'}
+                    </div>
+                    <div>
+                        <p style="font-weight:bold; text-align:center;">Segmentation Overlay</p>
+                        ${data.roi_overlay ? `<img src="data:image/jpeg;base64,${data.roi_overlay}">` : '<p>No overlay available</p>'}
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>Generated by NeoScan AI - AI-Assisted Neonatal Monitoring Platform</p>
+                <p><strong>Disclaimer:</strong> This is an AI-generated screening report. It does not replace professional clinical diagnosis. Please consult a healthcare provider.</p>
+            </div>
+        </body>
+        </html>
+    `);
+    printWin.document.close();
+    printWin.focus();
+    setTimeout(() => { printWin.print(); printWin.close(); }, 500);
+}
 
 function openCamera(){
 
@@ -1817,328 +1904,7 @@ Capture Image
 
 }
 
-function openAnalyticsModal(){
 
-openModal("Analytics Dashboard",`
-
-<div class="chart-container">
-<canvas id="analyticsChart"></canvas>
-</div>
-
-<div style="margin-top:2rem;" class="empty-state">
-<p style="color:var(--text-muted);">
-Analytics will dynamically update as scan data increases.
-</p>
-</div>
-
-`);
-
-setTimeout(()=>{
-
-new Chart(document.getElementById("analyticsChart"),{
-type:'bar',
-data:{
-labels:['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
-datasets:[{
-label:'Scans',
-data:[0,0,0,0,0,0,0]
-}]
-},
-options:{
-responsive:true,
-maintainAspectRatio:false
-}
-});
-
-},100);
-
-}
-
-function openResourcesModal(){
-
-openModal("Educational Resources",`
-
-<div class="resource-grid">
-
-<div class="resource-card">
-<h4>Research Papers</h4>
-<p style="color:var(--text-muted);margin:10px 0 1rem;">
-AI and neonatal healthcare studies.
-</p>
-<button class="action-btn secondary-btn" onclick="openResearchModal()">
-Open Section
-</button>
-</div>
-
-<div class="resource-card">
-<h4>About Jaundice</h4>
-<p style="color:var(--text-muted);margin:10px 0 1rem;">
-Medical neonatal jaundice information.
-</p>
-<button class="action-btn secondary-btn" onclick="openAboutModal()">
-Open Section
-</button>
-</div>
-
-<div class="resource-card">
-<h4>Prevention Tips</h4>
-<p style="color:var(--text-muted);margin:10px 0 1rem;">
-Healthcare prevention guidelines.
-</p>
-<button class="action-btn secondary-btn" onclick="openTipsModal()">
-Open Section
-</button>
-</div>
-
-<div class="resource-card">
-<h4>FAQs</h4>
-<p style="color:var(--text-muted);margin:10px 0 1rem;">
-Clinical frequently asked questions.
-</p>
-<button class="action-btn secondary-btn" onclick="openFAQModal()">
-Open Section
-</button>
-</div>
-
-</div>
-
-`);
-
-}
-
-function openResearchModal(){
-
-openModal("Research Papers",`
-
-<img src="https://images.unsplash.com/photo-1576091160550-2173dba999ef?auto=format&fit=crop&w=1400&q=80" class="faq-image">
-
-<div style="display:flex;gap:1rem;margin-bottom:1.5rem;flex-wrap:wrap;">
-<input type="text" placeholder="Search research papers..." style="flex:1;padding:1rem;border-radius:14px;border:1px solid var(--border);background:var(--bg-body);">
-<select style="padding:1rem;border-radius:14px;border:1px solid var(--border);background:var(--bg-body);">
-<option>All Years</option>
-<option>2026</option>
-<option>2025</option>
-<option>2024</option>
-</select>
-</div>
-
-<div class="paper-list">
-
-<div class="paper-card">
-<div class="paper-top">
-<h3>AI-Based Sclera Analysis for Neonatal Jaundice</h3>
-<span style="font-weight:600;color:var(--primary);">2025</span>
-</div>
-<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
-A deep learning based framework developed for bilirubin estimation using neonatal sclera images. The study focuses on non-invasive jaundice detection and smartphone-assisted screening.
-</p>
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-<small>Author: Dr. Emily Carter</small>
-<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
-Open Paper
-</a>
-</div>
-</div>
-
-<div class="paper-card">
-<div class="paper-top">
-<h3>Smartphone-Based Neonatal Monitoring</h3>
-<span style="font-weight:600;color:var(--primary);">2024</span>
-</div>
-<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
-Clinical validation of smartphone assisted neonatal jaundice screening systems with image processing and RGB based bilirubin estimation.
-</p>
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-<small>Author: Dr. William Lee</small>
-<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
-Open Paper
-</a>
-</div>
-</div>
-
-<div class="paper-card">
-<div class="paper-top">
-<h3>Machine Learning for Early Neonatal Diagnosis</h3>
-<span style="font-weight:600;color:var(--primary);">2026</span>
-</div>
-<p style="margin:1rem 0;color:var(--text-muted);line-height:1.8;">
-Research focused on AI-assisted healthcare systems for rapid neonatal disease identification using computer vision and cloud analytics.
-</p>
-<div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:1rem;">
-<small>Author: Dr. Sophia Green</small>
-<a href="https://example.com" target="_blank" class="action-btn" style="text-decoration:none;">
-Open Paper
-</a>
-</div>
-</div>
-
-</div>
-
-`);
-
-}
-
-
-function openAboutModal(){
-
-openModal("About Neonatal Jaundice",`
-
-<div class="info-scroll">
-
-<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1400&q=80" class="info-banner">
-
-<div class="info-section">
-<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1200&q=80">
-<div class="info-content">
-<h3>What is Neonatal Jaundice?</h3>
-<p>
-Neonatal jaundice is a common condition in newborn babies that causes yellow discoloration of the skin and eyes. It happens because bilirubin levels increase in the blood after birth. In many newborns this condition is mild, but proper monitoring is important.
-</p>
-</div>
-</div>
-
-<div class="info-section">
-<img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1200&q=80">
-<div class="info-content">
-<h3>Why Early Detection is Important</h3>
-<p>
-If jaundice becomes severe and is not treated on time, it can affect the baby’s nervous system and brain development. Early detection helps doctors begin treatment quickly and safely.
-</p>
-</div>
-</div>
-
-<div class="info-section">
-<img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1200&q=80">
-<div class="info-content">
-<h3>How NeoScan AI Helps</h3>
-<p>
-NeoScan AI helps healthcare professionals by analyzing sclera images using artificial intelligence technology. The system supports fast screening and assists in identifying possible jaundice risk.
-</p>
-</div>
-</div>
-
-</div>
-
-`);
-
-}
-
-
-function openTipsModal(){
-
-openModal("Prevention Tips",`
-
-<div class="tip-grid">
-
-<div class="tip-card">
-<img src="https://images.unsplash.com/photo-1516574187841-cb9cc2ca948b?auto=format&fit=crop&w=1000&q=80">
-<div class="tip-content">
-<h3><i class="fas fa-sun"></i> Use Proper Lighting</h3>
-<p>
-Capture neonatal eye images in balanced natural light to improve AI analysis quality.
-</p>
-</div>
-</div>
-
-<div class="tip-card">
-<img src="https://images.unsplash.com/photo-1505751172876-fa1923c5c528?auto=format&fit=crop&w=1000&q=80">
-<div class="tip-content">
-<h3><i class="fas fa-eye"></i> Clear Eye Visibility</h3>
-<p>
-Ensure the baby's sclera is clearly visible and avoid blurry or low quality images.
-</p>
-</div>
-</div>
-
-<div class="tip-card">
-<img src="https://images.unsplash.com/photo-1526256262350-7da7584cf5eb?auto=format&fit=crop&w=1000&q=80">
-<div class="tip-content">
-<h3><i class="fas fa-heart-pulse"></i> Feeding Support</h3>
-<p>
-Regular feeding helps reduce bilirubin accumulation and supports healthy newborn recovery.
-</p>
-</div>
-</div>
-
-<div class="tip-card">
-<img src="https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?auto=format&fit=crop&w=1000&q=80">
-<div class="tip-content">
-<h3><i class="fas fa-user-doctor"></i> Regular Checkups</h3>
-<p>
-Consult healthcare professionals regularly during the first week after birth.
-</p>
-</div>
-</div>
-
-</div>
-
-`);
-
-}
-
-
-
-function openFAQModal(){
-
-openModal("Frequently Asked Questions",`
-
-<img src="https://images.unsplash.com/photo-1584515933487-779824d29309?auto=format&fit=crop&w=1400&q=80" class="faq-image">
-
-<div class="accordion-item">
-<div class="accordion-header" onclick="toggleAccordion(this)">
-<span>What is neonatal jaundice?</span>
-<i class="fas fa-chevron-down"></i>
-</div>
-<div class="accordion-body">
-<p style="color:var(--text-muted);line-height:1.9;">
-Neonatal jaundice is a condition where bilirubin levels increase in newborn babies causing yellow discoloration of skin and eyes.
-</p>
-</div>
-</div>
-
-<div class="accordion-item">
-<div class="accordion-header" onclick="toggleAccordion(this)">
-<span>How does NeoScan AI work?</span>
-<i class="fas fa-chevron-down"></i>
-</div>
-<div class="accordion-body">
-<p style="color:var(--text-muted);line-height:1.9;">
-NeoScan AI analyzes neonatal sclera images using artificial intelligence and image processing technologies.
-</p>
-</div>
-</div>
-
-<div class="accordion-item">
-<div class="accordion-header" onclick="toggleAccordion(this)">
-<span>Is this system clinically approved?</span>
-<i class="fas fa-chevron-down"></i>
-</div>
-<div class="accordion-body">
-<p style="color:var(--text-muted);line-height:1.9;">
-The project currently supports AI-assisted screening and educational healthcare workflows.
-</p>
-</div>
-</div>
-
-<div class="accordion-item">
-<div class="accordion-header" onclick="toggleAccordion(this)">
-<span>Can smartphone images be used?</span>
-<i class="fas fa-chevron-down"></i>
-</div>
-<div class="accordion-body">
-<p style="color:var(--text-muted);line-height:1.9;">
-Yes, smartphone captured sclera images can be used if the lighting and image quality are good.
-</p>
-</div>
-</div>
-
-`);
-
-}
-
-function toggleAccordion(el){
-    el.parentElement.classList.toggle("active");
-}
 
 function openHistoryModal(){
 
@@ -2188,6 +1954,168 @@ openModal("Detailed Patient History",`
 
 `);
 
+}
+
+function openDoctorPanel(){
+    openModal("Doctor Panel",`
+        <div class="stats-grid">
+            <div class="stat-card" style="padding:1rem;">
+                <div style="font-weight:600; color:var(--text-muted);">Assigned Patients</div>
+                <div style="font-size:1.8rem; font-weight:700;">12</div>
+            </div>
+            <div class="stat-card" style="padding:1rem;">
+                <div style="font-weight:600; color:var(--text-muted);">Pending Reviews</div>
+                <div style="font-size:1.8rem; font-weight:700; color:var(--warning);">3</div>
+            </div>
+            <div class="stat-card" style="padding:1rem;">
+                <div style="font-weight:600; color:var(--text-muted);">High Risk Alerts</div>
+                <div style="font-size:1.8rem; font-weight:700; color:var(--danger);">1</div>
+            </div>
+        </div>
+        
+        <h4 style="margin-top:2rem; margin-bottom:1rem;">Recent High Risk Cases</h4>
+        <div style="background:var(--bg-body); border-radius:12px; border:1px solid var(--border); overflow:hidden;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:#f1f5f9; border-bottom:1px solid var(--border);">
+                    <th style="padding:12px;">Patient</th>
+                    <th style="padding:12px;">Age</th>
+                    <th style="padding:12px;">Bilirubin</th>
+                    <th style="padding:12px;">Status</th>
+                    <th style="padding:12px;">Action</th>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Neonatal Patient X</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">3 Days</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--danger); font-weight:600;">18.5 mg/dL</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><span style="background:#fee2e2; color:#ef4444; padding:4px 8px; border-radius:20px; font-size:0.8rem; font-weight:600;">High Risk</span></td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Review</button></td>
+                </tr>
+            </table>
+        </div>
+    `);
+}
+
+function openAdminPanel(){
+    openModal("System Administration Portal",`
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <div>
+                <h4 style="margin-bottom:5px;">NeoBot AI Configuration</h4>
+                <p style="font-size:0.9rem; color:var(--text-muted);">Set up your OpenAI API key to enable the Chatbot.</p>
+            </div>
+        </div>
+        
+        <div style="background:var(--bg-body); padding:1.5rem; border-radius:12px; border:1px solid var(--border); margin-bottom:2rem;">
+            <div class="form-group" style="margin-bottom:0;">
+                <label>OpenAI API Key <span style="color:var(--danger)">*</span></label>
+                <div style="display:flex; gap:10px;">
+                    <input type="password" id="adminApiKey" placeholder="sk-..." style="flex:1; padding:10px; border:1px solid var(--border); border-radius:8px;">
+                    <button class="action-btn" onclick="saveApiKey()">Save Key</button>
+                </div>
+            </div>
+        </div>
+        
+        <h4 style="margin-bottom:1rem;">Registered Doctors</h4>
+        <div style="background:var(--bg-body); border-radius:12px; border:1px solid var(--border); overflow:hidden; margin-bottom:2rem;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:#f1f5f9; border-bottom:1px solid var(--border);">
+                    <th style="padding:12px;">Doctor Name</th>
+                    <th style="padding:12px;">Specialty</th>
+                    <th style="padding:12px;">Assigned Patients</th>
+                    <th style="padding:12px;">Status</th>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Sharma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Pediatrics</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">14</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success); font-weight:600;">Active</td>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Kaur</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Neonatology</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">8</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success); font-weight:600;">Active</td>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Singh</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">General Practice</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">22</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--text-muted); font-weight:600;">Offline</td>
+                </tr>
+            </table>
+        </div>
+        
+        <h4 style="margin-bottom:1rem;">Patient Overview</h4>
+        <div style="background:var(--bg-body); border-radius:12px; border:1px solid var(--border); overflow:hidden;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:#f1f5f9; border-bottom:1px solid var(--border);">
+                    <th style="padding:12px;">Patient ID</th>
+                    <th style="padding:12px;">Name</th>
+                    <th style="padding:12px;">Assigned Doctor</th>
+                    <th style="padding:12px;">Latest Scan</th>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">PT-10024</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Aarav Sharma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Sharma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">2026-05-08</td>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">PT-10025</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Baby Smith</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Kaur</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">2026-05-07</td>
+                </tr>
+            </table>
+        </div>
+    `);
+    
+    setTimeout(() => {
+        const storedKey = localStorage.getItem("openai_api_key");
+        if (storedKey) document.getElementById("adminApiKey").value = storedKey;
+    }, 100);
+}
+
+function saveApiKey() {
+    const key = document.getElementById("adminApiKey").value;
+    if (key) {
+        localStorage.setItem("openai_api_key", key);
+        alert("API Key saved securely to your browser storage.");
+    }
+}
+
+function openReports(){
+    openModal("Clinical Reports",`
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
+            <div>
+                <h4 style="margin-bottom:5px;">Generate Batch Reports</h4>
+                <p style="font-size:0.9rem; color:var(--text-muted);">Select a date range to export multiple patient reports.</p>
+            </div>
+            <button class="action-btn"><i class="fas fa-file-export"></i> Export All (CSV)</button>
+        </div>
+        
+        <div style="background:var(--bg-body); border-radius:12px; border:1px solid var(--border); overflow:hidden;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:#f1f5f9; border-bottom:1px solid var(--border);">
+                    <th style="padding:12px;">Date</th>
+                    <th style="padding:12px;">Patient</th>
+                    <th style="padding:12px;">Type</th>
+                    <th style="padding:12px;">Action</th>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Today</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Aarav Sharma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Initial Scan</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;"><i class="fas fa-file-pdf"></i> Download</button></td>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Yesterday</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Baby Smith</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Follow-up</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;"><i class="fas fa-file-pdf"></i> Download</button></td>
+                </tr>
+            </table>
+        </div>
+    `);
 }
 
 function openSettingsModal(){

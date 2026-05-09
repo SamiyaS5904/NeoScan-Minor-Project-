@@ -875,7 +875,7 @@ h1,h2,h3,.logo-text{
 </a>
 </li>
 
-<li class="nav-item">
+<li class="nav-item" id="nav-doctor" style="display: none;">
 <a class="nav-link" onclick="openDoctorPanel()">
 <i class="fas fa-user-md"></i>
 <span>Doctor Panel</span>
@@ -896,7 +896,7 @@ h1,h2,h3,.logo-text{
 </a>
 </li>
 
-<li class="nav-item">
+<li class="nav-item" id="nav-admin" style="display: none;">
 <a class="nav-link" onclick="openAdminPanel()">
 <i class="fas fa-user-shield"></i>
 <span>Admin Portal</span>
@@ -924,7 +924,7 @@ h1,h2,h3,.logo-text{
 <i class="fas fa-bars"></i>
 </button>
 <div>
-<h1 style="font-size:1.7rem;">Welcome back, Dr. John</h1>
+<h1 style="font-size:1.7rem;">Welcome back, Dr. Suchita</h1>
 <p style="color:var(--text-muted);margin-top:4px;">NeoScan AI neonatal jaundice monitoring dashboard.</p>
 </div>
 </div>
@@ -1470,9 +1470,12 @@ openModal("Patient Information Setup",`
 <div class="input-group">
 <label>Assigned Doctor</label>
 <select id="bDoctor" style="width:100%; padding:8px; border-radius:8px; border:1px solid var(--border);">
-<option value="Dr. Sharma">Dr. Sharma</option>
-<option value="Dr. Kaur">Dr. Kaur</option>
-<option value="Dr. Singh">Dr. Singh</option>
+<option value="Dr. Suchita">Dr. Suchita</option>
+<option value="Dr. Raman Verma">Dr. Raman Verma</option>
+<option value="Dr. Tamanna">Dr. Tamanna</option>
+<option value="Dr. Suman">Dr. Suman</option>
+<option value="Dr. Aditya">Dr. Aditya</option>
+<option value="Dr. Abhishesk">Dr. Abhishesk</option>
 </select>
 </div>
 
@@ -1542,7 +1545,7 @@ function saveBaby(isOnboarding){
     sessionStorage.setItem("babyDOB", dob);
     sessionStorage.setItem("babyAge", age);
     sessionStorage.setItem("babyGest", gestAge);
-    sessionStorage.setItem("babyConfigured", "true");
+    localStorage.setItem("babyConfigured", "true");
     
     updateBabyUI();
     closeModal();
@@ -1555,7 +1558,7 @@ function saveBaby(isOnboarding){
 }
 
 function updateBabyUI() {
-    if(sessionStorage.getItem("babyConfigured") === "true") {
+    if(localStorage.getItem("babyConfigured") === "true") {
         document.getElementById("displayBabyName").innerText = sessionStorage.getItem("babyName");
         document.getElementById("displayBabyAge").innerText = sessionStorage.getItem("babyAge");
         document.getElementById("displayBabyGest").innerText = sessionStorage.getItem("babyGest") + " Wks | " + (sessionStorage.getItem("babyGender") || "");
@@ -2118,6 +2121,129 @@ function openReports(){
     `);
 }
 
+function openDoctorPanel() {
+    openModal("Doctor Clinical Panel", `
+        <div style="margin-bottom:1.5rem;">
+            <p style="color:var(--text-muted);">Manage assigned patients and review pending jaundice scans.</p>
+            <div class="stat-card" style="margin-top:1rem; border:1px solid var(--primary); background:var(--primary-light);">
+                <div style="font-weight:700; color:var(--primary);">3 High-Risk Cases Pending Review</div>
+            </div>
+        </div>
+        <div style="overflow-x:auto;">
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:var(--bg-body);">
+                    <th style="padding:12px;">Doctor</th>
+                    <th style="padding:12px;">Assigned Patient</th>
+                    <th style="padding:12px;">Status</th>
+                    <th style="padding:12px;">Action</th>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Suchita</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Baby Sharma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--danger); font-weight:bold;">Review Required</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;">View Scan</button></td>
+                </tr>
+                <tr>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Raman Verma</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Baby Doe</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success); font-weight:bold;">Cleared</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Archive</button></td>
+                </tr>
+            </table>
+        </div>
+    `);
+}
+
+function openAdminPanel() {
+    const currentKey = localStorage.getItem("openai_api_key") || "";
+    openModal("Global Admin Control Panel", `
+        <style>
+            .admin-tabs { display:flex; gap:10px; margin-bottom:1.5rem; border-bottom:1px solid var(--border); padding-bottom:10px; }
+            .admin-tab { padding:8px 15px; border-radius:8px; cursor:pointer; font-weight:600; color:var(--text-muted); transition:0.3s; }
+            .admin-tab:hover { background:var(--bg-body); }
+            .admin-tab.active { background:var(--primary); color:white; }
+            .admin-content { display:none; animation: fadeIn 0.3s ease; }
+            .admin-content.active { display:block; }
+        </style>
+        
+        <div class="admin-tabs">
+            <div class="admin-tab active" onclick="switchAdminTab('admin-doctors', this)"><i class="fas fa-user-md"></i> Doctors</div>
+            <div class="admin-tab" onclick="switchAdminTab('admin-patients', this)"><i class="fas fa-users"></i> Patients</div>
+            <div class="admin-tab" onclick="switchAdminTab('admin-config', this)"><i class="fas fa-cogs"></i> Configuration</div>
+        </div>
+
+        <div id="admin-doctors" class="admin-content active">
+            <h4>Registered Medical Staff</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Manage all authorized doctors in the system.</p>
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:var(--bg-body);">
+                    <th style="padding:12px;">Doctor Name</th>
+                    <th style="padding:12px;">Department</th>
+                    <th style="padding:12px;">Status</th>
+                    <th style="padding:12px;">Action</th>
+                </tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Suchita</td><td style="padding:12px; border-bottom:1px solid var(--border);">Pediatrics</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success);">Active</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Raman Verma</td><td style="padding:12px; border-bottom:1px solid var(--border);">Neonatology</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success);">Active</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Tamanna</td><td style="padding:12px; border-bottom:1px solid var(--border);">General</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--danger);">Offline</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Suman</td><td style="padding:12px; border-bottom:1px solid var(--border);">Pediatrics</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success);">Active</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Aditya</td><td style="padding:12px; border-bottom:1px solid var(--border);">Neonatology</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success);">Active</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Abhishesk</td><td style="padding:12px; border-bottom:1px solid var(--border);">General</td><td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success);">Active</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">Revoke</button></td></tr>
+            </table>
+            <button class="action-btn" style="margin-top:15px;" onclick="alert('Feature coming soon!')"><i class="fas fa-plus"></i> Add New Doctor</button>
+        </div>
+
+        <div id="admin-patients" class="admin-content">
+            <h4>Global Patient Registry</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Monitor all registered patient accounts across the platform.</p>
+            <table style="width:100%; border-collapse:collapse; text-align:left;">
+                <tr style="background:var(--bg-body);">
+                    <th style="padding:12px;">Patient/Parent Name</th>
+                    <th style="padding:12px;">Assigned Doctor</th>
+                    <th style="padding:12px;">Scans</th>
+                    <th style="padding:12px;">Action</th>
+                </tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Aarav Sharma</td><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Suchita</td><td style="padding:12px; border-bottom:1px solid var(--border);">2</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">View Profile</button></td></tr>
+                <tr><td style="padding:12px; border-bottom:1px solid var(--border);">Baby Doe</td><td style="padding:12px; border-bottom:1px solid var(--border);">Dr. Raman Verma</td><td style="padding:12px; border-bottom:1px solid var(--border);">1</td><td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn secondary-btn" style="padding:5px 10px; font-size:0.8rem;">View Profile</button></td></tr>
+            </table>
+        </div>
+
+        <div id="admin-config" class="admin-content">
+            <h4><i class="fas fa-server"></i> System Configuration</h4>
+            <p style="color:var(--text-muted); font-size:0.9rem; margin-bottom:15px;">Manage AI keys and Database Connections.</p>
+            
+            <div class="input-group" style="margin-bottom:1rem;">
+                <label>OpenAI API Key (For NeoBot Chatbot)</label>
+                <div style="display:flex; gap:10px;">
+                    <input type="password" id="adminApiKey" placeholder="sk-..." value="\${currentKey}" style="flex-grow:1;">
+                    <button class="action-btn" onclick="saveAdminSettings()">Save Key</button>
+                </div>
+                <p style="font-size:0.8rem; color:var(--text-muted); margin-top:5px;">Stored securely in browser LocalStorage.</p>
+            </div>
+            
+            <div class="input-group">
+                <label>Database Connection (MongoDB Atlas)</label>
+                <div style="display:flex; align-items:center; gap:10px; background:#f0fdf4; padding:10px; border-radius:8px; border:1px solid #22c55e;">
+                    <i class="fas fa-check-circle" style="color:#22c55e;"></i>
+                    <span style="color:#166534; font-weight:600; font-size:0.9rem;">Connected successfully to Cloud Cluster</span>
+                </div>
+            </div>
+        </div>
+    `);
+}
+
+function switchAdminTab(tabId, element) {
+    document.querySelectorAll('.admin-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('.admin-tab').forEach(el => el.classList.remove('active'));
+    document.getElementById(tabId).classList.add('active');
+    element.classList.add('active');
+}
+
+function saveAdminSettings() {
+    const key = document.getElementById("adminApiKey").value;
+    localStorage.setItem("openai_api_key", key);
+    alert("API Key saved to LocalStorage successfully. NeoBot is now fully active.");
+}
+
 function openSettingsModal(){
 
 openModal("System Settings",`
@@ -2359,7 +2485,17 @@ function sendChatMessage() {
 
 // --- STARTUP LOGIC ---
 window.onload = function() {
-    if (!sessionStorage.getItem("babyConfigured")) {
+    // SECURITY LOCKS: Hide/Show Admin and Doctor panels based on Role
+    const userRole = localStorage.getItem("userRole") || "parent";
+    
+    if (userRole === "doctor" || userRole === "admin") {
+        document.getElementById("nav-doctor").style.display = "block";
+    }
+    if (userRole === "admin") {
+        document.getElementById("nav-admin").style.display = "block";
+    }
+
+    if (!localStorage.getItem("babyConfigured")) {
         // First time user login -> Onboarding flow
         setTimeout(() => {
             openBabyModal(true);

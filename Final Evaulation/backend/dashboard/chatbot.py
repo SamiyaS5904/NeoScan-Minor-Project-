@@ -31,7 +31,11 @@ CRITICAL DISCLAIMER:
 Always conclude medical advice by briefly reminding the user that you are an AI and they must consult a pediatrician for definitive diagnosis.
 """
 
-def generate_chat_response(user_message, history=None):
+def generate_chat_response(user_message, history=None, api_key=None):
+    if api_key:
+        client = OpenAI(api_key=api_key)
+    else:
+        client = OpenAI(api_key=OPENAI_API_KEY)
     if not client:
         return "Chatbot is currently disabled. Please check the OpenAI API key."
         

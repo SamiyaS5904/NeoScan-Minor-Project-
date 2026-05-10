@@ -85,6 +85,18 @@ def dashboard_view(request):
 
     return render(request, 'dashboard/dashboard.html')
 
+@login_required
+def doctor_dashboard_view(request):
+    return render(request, 'dashboard/doctor_dashboard.html')
+
+@login_required
+def admin_dashboard_view(request):
+    return render(request, 'dashboard/admin_dashboard.html')
+
+@login_required
+def chat_view(request):
+    return render(request, 'dashboard/chat.html')
+
 
 # LOGOUT
 def logout_view(request):
@@ -92,3 +104,6 @@ def logout_view(request):
     logout(request)
 
     return redirect('home')
+
+def learn_view(request):
+    return render(request, 'dashboard/learn.html')

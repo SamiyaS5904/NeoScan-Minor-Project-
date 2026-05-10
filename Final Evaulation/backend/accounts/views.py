@@ -36,7 +36,7 @@ def register_view(request):
             username=username,
             email=email,
             password=password,
-            first_name=fullname
+            first_name=fullname or '' or ""
         )
 
         messages.success(request, "Account created successfully")

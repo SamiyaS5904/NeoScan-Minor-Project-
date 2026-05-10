@@ -130,11 +130,51 @@ def chat_with_neobot(request):
         if not user_message:
             return Response({"status": "error", "message": "No message provided"}, status=400)
             
-        bot_reply = generate_chat_response(user_message, history)
+        api_key = request.data.get('api_key')
+        bot_reply = generate_chat_response(user_message, history, api_key)
         
         return Response({
             "status": "success",
             "reply": bot_reply
         })
+    except Exception as e:
+        return Response({"status": "error", "message": str(e)}, status=400)
+
+
+from .models import PatientSetting
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def get_patient_settings(request):
+    try:
+        setting, created = PatientSetting.objects.get_or_create(user=request.user)
+        return Response({
+            "status": "success",
+            "scan_interval_hours": setting.scan_interval_hours,
+            "doctor_message": setting.doctor_message,
+            "alert_level": setting.alert_level
+        })
+    except Exception as e:
+        return Response({"status": "error", "message": str(e)}, status=400)
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_patient_settings(request):
+    try:
+        # In a real app, you'd find the patient by ID instead of request.user
+        # Assuming the doctor edits their own for this demo, or we find the patient
+        # For demo purposes, we update a global or specific user setting
+        setting, created = PatientSetting.objects.get_or_create(user=request.user)
+        
+        data = request.data
+        if 'scan_interval_hours' in data:
+            setting.scan_interval_hours = int(data['scan_interval_hours'])
+        if 'doctor_message' in data:
+            setting.doctor_message = data['doctor_message']
+        if 'alert_level' in data:
+            setting.alert_level = data['alert_level']
+            
+        setting.save()
+        return Response({"status": "success", "message": "Settings updated"})
     except Exception as e:
         return Response({"status": "error", "message": str(e)}, status=400)

@@ -5,14 +5,44 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 
 
+# ---------------- HOME ----------------
+
 def home(request):
     return render(request, 'dashboard/home.html')
 
+
+def learn(request):
+    return render(request, 'dashboard/learn.html')
+
+
+def chat(request):
+    return render(request, 'dashboard/chat.html')
+
+
+# ---------------- DASHBOARDS ----------------
 
 @login_required(login_url='/')
 def dashboard(request):
     return render(request, 'dashboard/dashboard.html')
 
+
+@login_required(login_url='/')
+def doctor_dashboard(request):
+    return render(
+        request,
+        'dashboard/doctor_dashboard.html'
+    )
+
+
+@login_required(login_url='/')
+def admin_dashboard(request):
+    return render(
+        request,
+        'dashboard/admin_dashboard.html'
+    )
+
+
+# ---------------- REGISTER ----------------
 
 def register_view(request):
 
@@ -22,36 +52,67 @@ def register_view(request):
         username = request.POST.get("username")
         email = request.POST.get("email")
         password = request.POST.get("password")
-        confirm_password = request.POST.get("confirm_password")
+        confirm_password = request.POST.get(
+            "confirm_password"
+        )
+
+        # role from dropdown
+        role = request.POST.get(
+            "role",
+            "parent"
+        )
 
         if password != confirm_password:
-            messages.error(request, "Passwords do not match")
+            messages.error(
+                request,
+                "Passwords do not match"
+            )
             return redirect('/')
 
-        if User.objects.filter(username=username).exists():
-            messages.error(request, "Username already exists")
+        if User.objects.filter(
+            username=username
+        ).exists():
+
+            messages.error(
+                request,
+                "Username already exists"
+            )
             return redirect('/')
 
-        User.objects.create_user(
+        user = User.objects.create_user(
             username=username,
             email=email,
             password=password,
-            first_name=fullname or '' or ""
+            first_name=fullname or ""
         )
 
-        messages.success(request, "Account created successfully")
+        # SAVE ROLE
+        user.last_name = role
+        user.save()
+
+        messages.success(
+            request,
+            "Account created successfully"
+        )
 
         return redirect('/')
 
     return redirect('/')
 
 
+# ---------------- LOGIN ----------------
+
 def login_view(request):
 
     if request.method == "POST":
 
-        username = request.POST.get("username")
-        password = request.POST.get("password")
+        username = request.POST.get(
+            "username"
+        )
+
+        password = request.POST.get(
+            "password"
+        )
 
         user = authenticate(
             request,
@@ -63,16 +124,36 @@ def login_view(request):
 
             login(request, user)
 
-            return redirect('/dashboard/')
+            role = user.last_name
+
+            if role == "doctor":
+                return redirect(
+                    '/doctor-dashboard/'
+                )
+
+            elif role == "admin":
+                return redirect(
+                    '/admin-dashboard/'
+                )
+
+            else:
+                return redirect(
+                    '/dashboard/'
+                )
 
         else:
 
-            messages.error(request, "Invalid Username or Password")
+            messages.error(
+                request,
+                "Invalid Username or Password"
+            )
 
             return redirect('/')
 
     return redirect('/')
 
+
+# ---------------- LOGOUT ----------------
 
 def logout_view(request):
 

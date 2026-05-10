@@ -1,4 +1,5 @@
 from django.urls import path
+from . import views
 from .views import dashboard_view, learn_view, doctor_dashboard_view, admin_dashboard_view, home, chat_view
 from .api_views import predict_bilirubin, chat_with_neobot, calibrate_lighting, get_patient_settings, update_patient_settings
 

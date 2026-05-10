@@ -3,1375 +3,524 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeoScan AI - Dashboard</title>
-
+<title>NeoScan AI - Premium Dashboard</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
 <style>
-
-/* ===== Enhanced Resource Modals ===== */
-.paper-list{
-    display:flex;
-    flex-direction:column;
-    gap:1.2rem;
-}
-
-.paper-card{
-    background:var(--bg-body);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:1.2rem;
-    transition:var(--transition);
-}
-
-.paper-card:hover{
-    transform:translateY(-4px);
-}
-
-.paper-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    gap:1rem;
-    flex-wrap:wrap;
-}
-
-.info-scroll{
-    display:flex;
-    flex-direction:column;
-    gap:1.5rem;
-}
-
-.info-banner{
-    width:100%;
-    height:280px;
-    object-fit:cover;
-    border-radius:22px;
-}
-
-.info-section{
-    background:var(--bg-body);
-    border:1px solid var(--border);
-    border-radius:22px;
-    overflow:hidden;
-}
-
-.info-section img{
-    width:100%;
-    height:240px;
-    object-fit:cover;
-}
-
-.info-content{
-    padding:1.5rem;
-}
-
-.info-content h3{
-    margin-bottom:.8rem;
-}
-
-.info-content p{
-    color:var(--text-muted);
-    line-height:1.9;
-}
-
-.tip-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-    gap:1.2rem;
-}
-
-.tip-card{
-    background:var(--bg-body);
-    border:1px solid var(--border);
-    border-radius:22px;
-    overflow:hidden;
-    transition:var(--transition);
-}
-
-.tip-card:hover{
-    transform:translateY(-5px);
-}
-
-.tip-card img{
-    width:100%;
-    height:220px;
-    object-fit:cover;
-}
-
-.tip-content{
-    padding:1.2rem;
-}
-
-.tip-content p{
-    color:var(--text-muted);
-    margin-top:.7rem;
-    line-height:1.8;
-}
-
-.faq-image{
-    width:100%;
-    height:240px;
-    object-fit:cover;
-    border-radius:20px;
-    margin-bottom:1.5rem;
-}
-
-
-:root{
-    --primary:#2563eb;
-    --primary-light:#dbeafe;
-    --bg-body:#f8fafc;
-    --bg-card:#ffffff;
-    --text-main:#1e293b;
-    --text-muted:#64748b;
-    --border:#e2e8f0;
-    --success:#22c55e;
-    --warning:#f59e0b;
-    --danger:#ef4444;
-    --sidebar-width:260px;
-    --transition:all .3s cubic-bezier(.4,0,.2,1);
-}
-
-[data-theme="dark"]{
-    --bg-body:#0f172a;
-    --bg-card:#1e293b;
-    --text-main:#f1f5f9;
-    --text-muted:#94a3b8;
-    --border:#334155;
-}
-
-*{
-    margin:0;
-    padding:0;
-    box-sizing:border-box;
-    font-family:'Inter',sans-serif;
-}
-
-body{
-    background:var(--bg-body);
-    color:var(--text-main);
-    overflow-x:hidden;
-    transition:var(--transition);
-}
-
-h1,h2,h3,.logo-text{
-    font-family:'Poppins',sans-serif;
-}
-
-.wrapper{
-    display:flex;
-    min-height:100vh;
-}
-
-.sidebar{
-    width:var(--sidebar-width);
-    background:var(--bg-card);
-    border-right:1px solid var(--border);
-    padding:1.5rem;
-    display:flex;
-    flex-direction:column;
-    position:fixed;
-    height:100vh;
-    z-index:100;
-    transition:var(--transition);
-}
-
-.logo-container{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    margin-bottom:2rem;
-    color:var(--primary);
-}
-
-.logo-text{
-    font-size:1.4rem;
-    font-weight:700;
-}
-
-.nav-menu{
-    list-style:none;
-    flex-grow:1;
-    overflow-y:auto;
-}
-
-.nav-item{
-    margin-bottom:.5rem;
-}
-
-.nav-link{
-    display:flex;
-    align-items:center;
-    gap:12px;
-    padding:.8rem 1rem;
-    border-radius:12px;
-    color:var(--text-muted);
-    text-decoration:none;
-    transition:var(--transition);
-    cursor:pointer;
-    font-weight:500;
-}
-
-.nav-link:hover,.nav-link.active{
-    background:var(--primary-light);
-    color:var(--primary);
-    transform:translateX(3px);
-}
-
-.nav-link.logout{
-    color:var(--danger);
-}
-
-.main-content{
-    flex-grow:1;
-    margin-left:var(--sidebar-width);
-    padding:2rem;
-    transition: margin-left 0.3s ease-in-out, width 0.3s ease-in-out;
-}
-
-.top-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:2rem;
-    gap:1rem;
-}
-
-.search-box{
-    position:relative;
-    width:400px;
-}
-
-.search-box input{
-    width:100%;
-    padding:.8rem 1rem .8rem 2.7rem;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:var(--bg-card);
-    outline:none;
-    color:var(--text-main);
-}
-
-.search-box i{
-    position:absolute;
-    left:1rem;
-    top:50%;
-    transform:translateY(-50%);
-    color:var(--text-muted);
-}
-
-.header-actions{
-    display:flex;
-    align-items:center;
-    gap:1rem;
-}
-
-.icon-btn{
-    border:none;
-    background:var(--bg-card);
-    width:42px;
-    height:42px;
-    border-radius:12px;
-    border:1px solid var(--border);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-    transition:var(--transition);
-    color:var(--text-main);
-    position:relative;
-}
-
-.icon-btn:hover{
-    transform:translateY(-2px);
-}
-
-.notification-dot{
-    width:8px;
-    height:8px;
-    border-radius:50%;
-    background:var(--danger);
-    position:absolute;
-    top:8px;
-    right:8px;
-}
-
-.user-profile{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    padding-left:1rem;
-    border-left:1px solid var(--border);
-}
-
-.user-avatar{
-    width:42px;
-    height:42px;
-    border-radius:50%;
-    object-fit:cover;
-}
-
-.stats-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:1.5rem;
-    margin-bottom:2rem;
-}
-
-.stat-card{
-    background:var(--bg-card);
-    border-radius:22px;
-    padding:1.5rem;
-    border:1px solid var(--border);
-    transition:var(--transition);
-    position:relative;
-    overflow:hidden;
-}
-
-.stat-card:hover{
-    transform:translateY(-6px);
-    box-shadow:0 15px 30px rgba(0,0,0,.06);
-}
-
-.stat-header{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:1rem;
-}
-
-.stat-icon{
-    width:50px;
-    height:50px;
-    border-radius:14px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-size:1.1rem;
-}
-
-.stat-value{
-    font-size:2rem;
-    font-weight:700;
-}
-
-.stat-label{
-    color:var(--text-muted);
-    font-size:.9rem;
-}
-
-.dashboard-grid{
-    display:grid;
-    grid-template-columns:2fr 1fr;
-    gap:1.5rem;
-}
-
-.card{
-    background:var(--bg-card);
-    border-radius:22px;
-    padding:1.5rem;
-    border:1px solid var(--border);
-    margin-bottom:1.5rem;
-    animation:fadeUp .7s ease;
-}
-
-.card-title{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    margin-bottom:1.2rem;
-    font-weight:600;
-    font-size:1.1rem;
-}
-
-.upload-area{
-    border:2px dashed var(--border);
-    border-radius:18px;
-    padding:3rem;
-    text-align:center;
-    background:var(--bg-body);
-    transition:var(--transition);
-}
-
-.upload-area:hover{
-    border-color:var(--primary);
-    background:var(--primary-light);
-}
-
-.upload-icon{
-    font-size:3rem;
-    color:var(--primary);
-    margin-bottom:1rem;
-}
-
-.upload-actions{
-    display:flex;
-    justify-content:center;
-    gap:1rem;
-    flex-wrap:wrap;
-}
-
-.action-btn{
-    border:none;
-    padding:.9rem 1.4rem;
-    border-radius:12px;
-    background:var(--primary);
-    color:white;
-    cursor:pointer;
-    font-weight:600;
-    display:flex;
-    align-items:center;
-    gap:8px;
-    transition:var(--transition);
-}
-
-.action-btn:hover{
-    transform:translateY(-2px);
-}
-
-.secondary-btn{
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    color:var(--text-main);
-}
-
-.preview-container{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(180px,1fr));
-    gap:1rem;
-    margin-top:1.5rem;
-}
-
-.preview-box{
-    background:var(--bg-body);
-    border-radius:18px;
-    border:1px solid var(--border);
-    padding:1rem;
-    text-align:center;
-}
-
-.preview-box img{
-    width:100%;
-    height:170px;
-    object-fit:cover;
-    border-radius:14px;
-    margin-top:.5rem;
-}
-
-.placeholder-box{
-    width:100%;
-    height:170px;
-    border-radius:14px;
-    background:linear-gradient(135deg,#eff6ff,#e2e8f0);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    color:var(--text-muted);
-    font-size:.9rem;
-}
-
-.result-badge{
-    display:inline-flex;
-    align-items:center;
-    gap:8px;
-    padding:.6rem 1rem;
-    border-radius:30px;
-    font-size:.85rem;
-    font-weight:600;
-    margin-bottom:1rem;
-}
-
-.high-risk{
-    background:#fee2e2;
-    color:#ef4444;
-}
-
-.low-risk{
-    background:#dcfce7;
-    color:#16a34a;
-}
-
-.progress-bar{
-    width:100%;
-    height:8px;
-    border-radius:20px;
-    background:#e2e8f0;
-    overflow:hidden;
-    margin-top:.4rem;
-}
-
-.progress-fill{
-    width:0%;
-    height:100%;
-    background:var(--primary);
-    border-radius:20px;
-    transition:width 1.5s ease;
-}
-
-.chart-container{
-    height:280px;
-}
-
-.history-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:1rem;
-}
-
-.history-card{
-    background:var(--bg-body);
-    border:1px solid var(--border);
-    border-radius:18px;
-    padding:1rem;
-    cursor:pointer;
-    transition:var(--transition);
-}
-
-.history-card:hover{
-    transform:translateY(-4px);
-}
-
-.history-card img{
-    width:100%;
-    height:160px;
-    object-fit:cover;
-    border-radius:14px;
-    margin-bottom:1rem;
-}
-
-.resource-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(250px,1fr));
-    gap:1rem;
-}
-
-.resource-card{
-    background:var(--bg-body);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:1.2rem;
-    transition:var(--transition);
-}
-
-.resource-card:hover{
-    transform:translateY(-5px);
-}
-
-.resource-image{
-    width:100%;
-    height:180px;
-    border-radius:14px;
-    object-fit:cover;
-    margin-bottom:1rem;
-}
-
-.modal-overlay{
-    position:fixed;
-    inset:0;
-    background:rgba(15,23,42,.55);
-    backdrop-filter:blur(6px);
-    z-index:9999;
-    display:none;
-    justify-content:center;
-    align-items:center;
-    padding:1rem;
-}
-
-.modal-overlay.active{
-    display:flex;
-    animation:fade .3s ease;
-}
-
-.modal-content{
-    background:var(--bg-card);
-    width:100%;
-    max-width:1100px;
-    border-radius:26px;
-    border:1px solid var(--border);
-    max-height:92vh;
-    overflow:hidden;
-    animation:scaleIn .35s ease;
-}
-
-.modal-header{
-    padding:1.5rem 2rem;
-    border-bottom:1px solid var(--border);
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.modal-body{
-    padding:2rem;
-    overflow-y:auto;
-    max-height:80vh;
-}
-
-.close-modal{
-    background:none;
-    border:none;
-    font-size:1.4rem;
-    cursor:pointer;
-    color:var(--text-muted);
-}
-
-.form-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(240px,1fr));
-    gap:1rem;
-}
-
-.input-group{
-    display:flex;
-    flex-direction:column;
-    gap:.5rem;
-}
-
-.input-group input,
-.input-group textarea,
-.input-group select{
-    padding:.9rem 1rem;
-    border-radius:14px;
-    border:1px solid var(--border);
-    background:var(--bg-body);
-    color:var(--text-main);
-    outline:none;
-}
-
-.modal-actions{
-    display:flex;
-    justify-content:flex-end;
-    gap:1rem;
-    margin-top:1.5rem;
-}
-
-.notification-panel{
-    position:absolute;
-    top:55px;
-    right:0;
-    width:320px;
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:1rem;
-    box-shadow:0 20px 40px rgba(0,0,0,.08);
-    display:none;
-    z-index:999;
-}
-
-.notification-panel.active{
-    display:block;
-    animation:fadeUp .3s ease;
-}
-
-.notification-item{
-    display:flex;
-    gap:12px;
-    padding:1rem 0;
-    border-bottom:1px solid var(--border);
-}
-
-.notification-item:last-child{
-    border-bottom:none;
-}
-
-.accordion-item{
-    border:1px solid var(--border);
-    border-radius:16px;
-    margin-bottom:1rem;
-    overflow:hidden;
-}
-
-.accordion-header{
-    padding:1rem 1.2rem;
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    cursor:pointer;
-    background:var(--bg-body);
-}
-
-.accordion-body{
-    max-height:0;
-    overflow:hidden;
-    transition:max-height .4s ease;
-    padding:0 1.2rem;
-}
-
-.accordion-item.active .accordion-body{
-    max-height:300px;
-    padding:1rem 1.2rem;
-}
-
-.report-layout{
-    border:1px solid var(--border);
-    border-radius:20px;
-    padding:2rem;
-    background:var(--bg-body);
-}
-
-.fade-reveal{
-    opacity:0;
-    transform:translateY(25px);
-    transition:all .8s ease;
-}
-
-.fade-reveal.active{
-    opacity:1;
-    transform:translateY(0);
-}
-
-.loading-line{
-    width:100%;
-    height:8px;
-    border-radius:20px;
-    background:#e2e8f0;
-    overflow:hidden;
-    margin-top:1rem;
-}
-
-.loading-line span{
-    display:block;
-    width:40%;
-    height:100%;
-    background:linear-gradient(90deg,transparent,var(--primary),transparent);
-    animation:loading 1.5s infinite;
-}
-
-@keyframes loading{
-    0%{transform:translateX(-100%);}
-    100%{transform:translateX(300%);}
-}
-
-@keyframes fade{
-    from{opacity:0;}
-    to{opacity:1;}
-}
-
-@keyframes scaleIn{
-    from{
-        transform:scale(.9);
-        opacity:0;
-    }
-    to{
-        transform:scale(1);
-        opacity:1;
-    }
-}
-
-@keyframes fadeUp{
-    from{
-        opacity:0;
-        transform:translateY(25px);
-    }
-    to{
-        opacity:1;
-        transform:translateY(0);
-    }
-}
-
-@media(max-width:1024px){
-
-    .sidebar{
-        width:85px;
-        padding:1rem;
+    :root {
+        --primary: #3b82f6;
+        --primary-light: #eff6ff;
+        --bg-body: #f8fafc;
+        --bg-card: #ffffff;
+        --text-main: #0f172a;
+        --text-muted: #64748b;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --sidebar-width: 240px;
+        --transition: all .2s ease;
     }
 
-    .logo-text,
-    .nav-link span{
-        display:none;
+    [data-theme="dark"] {
+        --bg-body: #0f172a;
+        --bg-card: #1e293b;
+        --text-main: #f8fafc;
+        --text-muted: #94a3b8;
+        --border: #334155;
     }
 
-    .main-content{
-        margin-left:85px;
+    * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
+    body { background: var(--bg-body); color: var(--text-main); overflow-x: hidden; transition: var(--transition); font-size: 14px; line-height: 1.5; }
+    h1, h2, h3, .logo-text { font-family: 'Poppins', sans-serif; }
+
+    .wrapper { display: flex; min-height: 100vh; }
+    
+    /* Sidebar */
+    .sidebar {
+        width: var(--sidebar-width); background: var(--bg-card); border-right: 1px solid var(--border);
+        padding: 1.5rem 1rem; display: flex; flex-direction: column; position: fixed; height: 100vh;
+        z-index: 100; transition: transform 0.3s cubic-bezier(0.25, 1, 0.5, 1); overflow-y: auto; overflow-x: hidden;
     }
-
-    .dashboard-grid{
-        grid-template-columns:1fr;
+    .sidebar.collapsed { transform: translateX(-100%); position: absolute; height: 100%; z-index: 1000; }
+    .logo-container { display: flex; align-items: center; gap: 10px; margin-bottom: 2.5rem; color: var(--primary); padding-left: 8px; }
+    .logo-text { font-size: 1.2rem; font-weight: 700; color: var(--text-main); }
+    .logo-container i { color: var(--primary); font-size: 1.4rem; }
+    
+    .nav-menu { list-style: none; flex-grow: 1; overflow-y: auto; }
+    .nav-item { margin-bottom: 0.2rem; }
+    .nav-link {
+        display: flex; align-items: center; gap: 12px; padding: 0.75rem 1rem; border-radius: 10px; font-size: 0.9rem;
+        color: var(--text-muted); text-decoration: none; transition: var(--transition); cursor: pointer; font-weight: 500;
     }
+    .nav-link:hover, .nav-link.active { background: var(--primary-light); color: var(--primary); }
+    .nav-link.logout { color: var(--danger); margin-top: auto; }
 
-    .search-box{
-        width:240px;
+    /* Main Content */
+    .main-content { 
+        flex-grow: 1; margin-left: var(--sidebar-width); padding: 1.5rem 2.5rem; 
+        transition: margin-left 0.3s ease, width 0.3s ease; 
+        max-width: 1500px; /* Constrain max width so it doesn't stretch huge on ultrawide */
+        margin-right: auto;
     }
-}
-
-.sidebar {
-    transition: transform 0.3s ease-in-out;
-}
-
-.sidebar.collapsed {
-    transform: translateX(-100%);
-    position: absolute;
-    height: 100%;
-    z-index: 1000;
-}
-
-@media(max-width:768px){
-
-    .top-header{
-        flex-direction:column;
-        align-items:flex-start;
+    
+    /* Top Header */
+    .top-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; }
+    .greeting-section h1 { font-size: clamp(1.4rem, 2.5vw, 1.8rem); font-weight: 600; line-height: 1.2; }
+    .greeting-section p { color: var(--text-muted); margin-top: 4px; font-size: 0.9rem; }
+    .header-actions { display: flex; align-items: center; gap: 1rem; }
+    
+    .icon-btn {
+        border: none; background: var(--bg-card); width: 38px; height: 38px; border-radius: 50%;
+        border: 1px solid var(--border); display: flex; align-items: center; justify-content: center;
+        cursor: pointer; transition: var(--transition); color: var(--text-main); position: relative;
     }
+    .icon-btn:hover { background: var(--bg-body); transform: translateY(-2px); }
+    .icon-btn i { font-size: 0.95rem; }
+    .notification-dot { width: 6px; height: 6px; border-radius: 50%; background: var(--danger); position: absolute; top: 8px; right: 10px; display: none; }
+    
+    .user-profile { display: flex; align-items: center; gap: 10px; padding-left: 1rem; border-left: 1px solid var(--border); cursor: pointer; }
+    .user-avatar { width: 38px; height: 38px; border-radius: 50%; object-fit: cover; }
 
-    .search-box{
-        width:100%;
+    /* Layout */
+    .dashboard-layout { display: grid; grid-template-columns: 2fr 1fr; gap: 1.25rem; align-items: start; }
+    .left-col { display: flex; flex-direction: column; gap: 1.25rem; }
+    .right-col { display: flex; flex-direction: column; gap: 1.25rem; position: sticky; top: 1.5rem; }
+
+    .card { background: var(--bg-card); border-radius: 16px; padding: 1.25rem; border: 1px solid var(--border); box-shadow: 0 2px 10px rgba(0,0,0,0.02); position: relative; overflow: hidden; }
+
+    /* Typography */
+    h3 { font-size: 1.05rem !important; font-weight: 600; margin-bottom: 0.8rem; line-height: 1.3; }
+    
+    /* Baby Info */
+    .baby-info-card { display: flex; align-items: center; justify-content: space-between; padding: 1rem 1.5rem; gap: 1rem; }
+    .baby-avatar-container { display: flex; align-items: center; gap: 1rem; }
+    .baby-avatar { width: 44px; height: 44px; background: #e0f2fe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.4rem; }
+    .baby-details { display: flex; gap: 2.5rem; align-items: center; }
+    .baby-stat-group { display: flex; flex-direction: column; gap: 2px; }
+    .baby-stat-label { font-size: 0.8rem; color: var(--text-muted); font-weight: 500; text-transform: uppercase; letter-spacing: 0.5px; }
+    .baby-stat-value { font-size: 0.9rem; font-weight: 600; color: var(--text-main); }
+
+    /* Hero */
+    .hero-card { display: grid; grid-template-columns: 1.3fr 1fr 1fr; gap: 1rem; align-items: center; }
+    .hero-text h2 { font-size: clamp(1.2rem, 1.8vw, 1.5rem); font-weight: 600; margin-bottom: 6px; transition: var(--transition); line-height: 1.2; }
+    .hero-text p { color: var(--text-muted); font-size: 0.85rem; line-height: 1.4; margin-bottom: 1rem; }
+    .hero-labels { display: flex; gap: 8px; font-size: 0.75rem; color: var(--primary); font-weight: 500; margin-top: 0.5rem; flex-wrap: wrap; }
+    .hero-labels span { display: flex; align-items: center; gap: 3px; }
+    .hero-labels span::before { content: "•"; }
+    .hero-labels span:first-child::before { display: none; }
+    
+    .action-btn { background: var(--primary); color: #fff; border: none; padding: 0.6rem 1rem; border-radius: 8px; font-weight: 600; font-size: 0.85rem; cursor: pointer; transition: var(--transition); display: inline-flex; align-items: center; gap: 6px; justify-content:center; }
+    .action-btn:hover { background: #2563eb; transform: translateY(-2px); }
+    .secondary-btn { background: #f1f5f9; color: var(--text-main); border: 1px solid var(--border); }
+    .secondary-btn:hover { background: #e2e8f0; }
+
+    .risk-circle-container { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+    .risk-circle { width: 110px; height: 110px; border-radius: 50%; border: 6px solid #dcfce7; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; }
+    .risk-circle i { font-size: 1.2rem; color: #16a34a; margin-bottom: 2px; }
+    .risk-circle .label { font-size: 0.7rem; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; }
+    .risk-circle .value { font-size: 1.6rem; font-weight: 700; color: #16a34a; line-height: 1; }
+    
+    .hero-mini-cards { display: flex; flex-direction: column; gap: 0.75rem; }
+    .mini-card { background: var(--bg-body); border-radius: 12px; padding: 0.75rem 1rem; display: flex; align-items: center; gap: 0.75rem; border: 1px solid var(--border); }
+    .mini-card i { font-size: 1.1rem; }
+    .mini-card .content { display: flex; flex-direction: column; }
+    .mini-card .label { font-size: 0.75rem; color: var(--text-muted); }
+    .mini-card .value { font-size: 0.9rem; font-weight: 600; line-height: 1.2; }
+
+    /* Quick Actions */
+    .quick-actions-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; margin-top: 0.75rem; transition: max-height 0.3s ease, opacity 0.3s ease; overflow: hidden; }
+    .quick-actions-grid.folded { max-height: 0; opacity: 0; margin-top: 0; }
+    .quick-action-item { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 0.8rem; background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border); cursor: pointer; transition: var(--transition); text-align: center; }
+    .quick-action-item:hover { background: var(--primary-light); transform: translateY(-2px); border-color: var(--primary); }
+    .quick-action-item i { font-size: 1.1rem; padding: 8px; border-radius: 50%; }
+    .quick-action-item span { font-size: 0.8rem; font-weight: 500; }
+
+    /* Upload */
+    .upload-area { border: 1.5px dashed var(--border); border-radius: 16px; padding: 1.5rem; text-align: center; background: var(--bg-body); transition: var(--transition); cursor: pointer; margin-bottom: 1rem; }
+    .upload-area:hover { border-color: var(--primary); background: var(--primary-light); }
+    .upload-icon { font-size: 1.8rem; color: var(--primary); margin-bottom: 0.5rem; }
+
+    .preview-container { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 0.8rem; margin-top: 1rem; }
+    .preview-box { background: var(--bg-body); border-radius: 12px; border: 1px solid var(--border); padding: 0.8rem; text-align: center; }
+    .preview-box img { width: 100%; aspect-ratio: 1 / 1; height: auto; object-fit: cover; border-radius: 8px; margin-top: .4rem; }
+    .placeholder-box { width: 100%; aspect-ratio: 1 / 1; height: auto; border-radius: 8px; background: linear-gradient(135deg,#f1f5f9,#e2e8f0); display: flex; align-items: center; justify-content: center; color: var(--text-muted); font-size: .8rem; }
+
+    /* Result Section */
+    .result-section { text-align: center; margin-top: 0.5rem; }
+    .result-value { font-size: 2.2rem; font-weight: 800; color: var(--primary); margin: 5px 0; line-height: 1.1; }
+    .high-risk-alert { background: #fee2e2; padding: 0.8rem; border-radius: 10px; border: 1px solid #ef4444; color: #ef4444; font-weight: 600; margin-bottom: 1rem; font-size: 0.85rem; display: none; line-height: 1.4; }
+
+    /* FAQs */
+    .faq-container { display: flex; flex-direction: column; gap: 0.8rem; }
+    .faq-item { background: var(--bg-body); padding: 1rem; border-radius: 12px; border: 1px solid var(--border); }
+    .faq-item h4 { font-size: 0.85rem; margin-bottom: 4px; color: var(--primary); font-weight: 600; }
+    .faq-item p { color: var(--text-muted); font-size: 0.8rem; line-height: 1.4; }
+
+    /* Modals & Chatbot */
+    .modal-overlay{ position:fixed; inset:0; background:rgba(15,23,42,.4); backdrop-filter:blur(4px); z-index:9999; display:none; justify-content:center; align-items:center; padding:1rem; }
+    .modal-overlay.active{ display:flex; animation:fade .2s ease; }
+    .modal-content{ background:var(--bg-card); width:100%; max-width:500px; border-radius:20px; border:1px solid var(--border); max-height:90vh; overflow:hidden; animation:scaleIn .2s ease; box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
+    .modal-header{ padding:1.2rem 1.5rem; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
+    .modal-body{ padding:1.5rem; overflow-y:auto; max-height:75vh; }
+    .close-modal{ background:none; border:none; font-size:1.2rem; cursor:pointer; color:var(--text-muted); }
+
+    .form-grid{ display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:1rem; }
+    .input-group{ display:flex; flex-direction:column; gap:.4rem; }
+    .input-group label { font-size: 0.8rem; font-weight: 500; color: var(--text-muted); }
+    .input-group input, .input-group textarea, .input-group select { padding:.7rem 1rem; border-radius:10px; border:1px solid var(--border); background:var(--bg-body); color:var(--text-main); font-size: 0.9rem; outline:none; transition: var(--transition); }
+    .input-group input:focus, .input-group select:focus { border-color: var(--primary); }
+    .modal-actions{ display:flex; justify-content:flex-end; gap:0.8rem; margin-top:1.5rem; }
+
+    /* Chatbot Styles adjustments for scaling */
+    .chat-widget { width: 320px; bottom: 80px; }
+    .chat-header { padding: 12px 16px; font-size: 0.9rem; }
+    .chat-body { height: 300px; }
+    .chat-msg { font-size: 0.85rem; padding: 10px 14px; line-height: 1.4; }
+    
+    .chat-toggle { width: 50px; height: 50px; font-size: 1.2rem; }
+
+    .fade-reveal { opacity: 0; transform: translateY(15px); transition: all 0.5s ease; }
+    .fade-reveal.active { opacity: 1; transform: translateY(0); }
+    
+    @keyframes scaleIn{ from{ transform:scale(.95); opacity:0; } to{ transform:scale(1); opacity:1; } }
+    @keyframes fade{ from{opacity:0;} to{opacity:1;} }
+    
+    .loading-line { width: 100%; height: 4px; border-radius: 10px; background: #e2e8f0; overflow: hidden; margin-top: 1rem; }
+    .loading-line span { display: block; width: 40%; height: 100%; background: var(--primary); animation: loading 1s infinite linear; border-radius: 10px; }
+    @keyframes loading { 0% { transform: translateX(-100%); } 100% { transform: translateX(300%); } }
+
+    .notification-panel { position: absolute; top: 50px; right: 0; width: 280px; background: var(--bg-card); border: 1px solid var(--border); border-radius: 12px; padding: 0.8rem; box-shadow: 0 10px 30px rgba(0,0,0,.08); display: none; z-index: 999; }
+    .notification-panel.active { display: block; animation: scaleIn .2s ease; }
+    .notification-item { display: flex; gap: 10px; padding: 0.8rem 0; border-bottom: 1px solid var(--border); font-size: 0.85rem; }
+    .notification-item:last-child { border-bottom: none; }
+
+    @media(max-width: 1200px) {
+        .dashboard-layout { grid-template-columns: 1fr; }
+        .hero-card { grid-template-columns: 1fr 1fr; }
+        .right-col { position: static; }
     }
-
-    .main-content{
-        padding:1rem;
+    @media(max-width: 768px) {
+        .hero-card { grid-template-columns: 1fr; text-align: center; }
+        .hero-labels { justify-content: center; }
+        .baby-info-card { flex-wrap: wrap; gap: 1rem; }
+        .baby-details { gap: 1rem; flex-wrap: wrap; }
+        .main-content { padding: 1.5rem; }
     }
-
-    .modal-body{
-        padding:1rem;
-    }
-
-    .modal-header{
-        padding:1rem;
-    }
-}
-
 </style>
 </head>
-
 <body>
 
 <div class="wrapper">
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="logo-container">
+            <i class="fas fa-crosshairs"></i>
+            <span class="logo-text">NeoScan</span>
+        </div>
+        <ul class="nav-menu">
+            <li class="nav-item"><a class="nav-link active"><i class="fas fa-home"></i><span>Dashboard</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="document.getElementById('fileInput').click()"><i class="fas fa-camera"></i><span>New Scan</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="openReports()"><i class="fas fa-file-medical-alt"></i><span>Reports</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="window.scrollTo(0, document.body.scrollHeight)"><i class="fas fa-chart-line"></i><span>Trend Graph</span></a></li>
+            <li class="nav-item" id="nav-doctor" style="display:none;"><a class="nav-link" onclick="openDoctorPanel()"><i class="fas fa-stethoscope"></i><span>Doctor Monitoring</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="alert('Reminders active')"><i class="fas fa-bell"></i><span>Reminders</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="toggleChat()"><i class="fas fa-robot"></i><span>AI Chatbot</span></a></li>
+            <li class="nav-item"><a class="nav-link" onclick="openSettingsModal()"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li class="nav-item" id="nav-admin" style="display:none;"><a class="nav-link" onclick="openAdminPanel()"><i class="fas fa-shield-alt"></i><span>Admin Panel</span></a></li>
+            <li class="nav-item" style="margin-top:auto;"><a href="{% url 'logout' %}" class="nav-link logout"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
+        </ul>
+    </nav>
 
-<nav class="sidebar">
+    <main class="main-content">
+        <!-- Top Header -->
+        <header class="top-header">
+            <div class="greeting-section" style="display:flex; align-items:center;">
+                <button class="icon-btn" onclick="toggleSidebar()" style="margin-right:15px; border:none; background:transparent; width:34px; height:34px;">
+                    <i class="fas fa-bars" style="font-size:1.1rem;"></i>
+                </button>
+                <div>
+                    <h1>Good Morning, {{ request.user.username }} 👋</h1>
+                    <p>Here's your baby's health overview</p>
+                </div>
+            </div>
+            
+            <div class="header-actions">
+                <button class="icon-btn" onclick="toggleTheme()"><i class="fas fa-moon" id="theme-icon"></i></button>
+                
+                <div style="position:relative;">
+                    <button class="icon-btn" onclick="toggleNotifications()">
+                        <i class="fas fa-bell"></i>
+                        <span class="notification-dot"></span>
+                    </button>
+                    <div class="notification-panel" id="notificationPanel"></div>
+                </div>
+                
+                <div class="user-profile">
+                    <div style="text-align:right;">
+                        <div style="font-weight:600; font-size:0.85rem;" id="profileName">{{ request.user.username }}</div>
+                        <div style="font-size:0.75rem; color:var(--text-muted);">Parent</div>
+                    </div>
+                    <img src="https://i.pravatar.cc/150?img=5" class="user-avatar" id="profileImage">
+                    <i class="fas fa-chevron-down" style="font-size:0.75rem; color:var(--text-muted); margin-left:4px;"></i>
+                </div>
+            </div>
+        </header>
 
-<div class="logo-container">
-<i class="fas fa-eye-dropper fa-2x"></i>
-<span class="logo-text">NeoScan AI</span>
-</div>
-
-<ul class="nav-menu">
-
-<li class="nav-item">
-<a class="nav-link active">
-<i class="fas fa-th-large"></i>
-<span>Dashboard</span>
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" onclick="openUploadModal()">
-<i class="fas fa-plus-circle"></i>
-<span>New Scan</span>
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" onclick="openBabyModal()">
-<i class="fas fa-users"></i>
-<span>Patients</span>
-</a>
-</li>
-
-<li class="nav-item" id="nav-doctor" style="display: none;">
-<a class="nav-link" onclick="openDoctorPanel()">
-<i class="fas fa-user-md"></i>
-<span>Doctor Panel</span>
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" onclick="openReports()">
-<i class="fas fa-file-medical-alt"></i>
-<span>Reports</span>
-</a>
-</li>
-
-<li class="nav-item">
-<a class="nav-link" onclick="toggleNotifications()">
-<i class="fas fa-bell"></i>
-<span>Notifications</span>
-</a>
-</li>
-
-<li class="nav-item" id="nav-admin" style="display: none;">
-<a class="nav-link" onclick="openAdminPanel()">
-<i class="fas fa-user-shield"></i>
-<span>Admin Portal</span>
-</a>
-</li>
-
-
-
-<li class="nav-item">
-    <a href="{% url 'logout' %}" class="nav-link logout">
-        <i class="fas fa-sign-out-alt"></i>
-        <span>Logout</span>
-    </a>
-</li>
-</ul>
-
-</nav>
-
-<main class="main-content">
-
-<header class="top-header">
-
-<div style="display:flex; align-items:center;">
-<button class="icon-btn" onclick="toggleSidebar()" style="margin-right:15px; font-size:1.5rem; background:transparent; border:none; color:var(--text-main); cursor:pointer;">
-<i class="fas fa-bars"></i>
-</button>
-<div>
-<h1 style="font-size:1.7rem;">Welcome back, Dr. Suchita</h1>
-<p style="color:var(--text-muted);margin-top:4px;">NeoScan AI neonatal jaundice monitoring dashboard.</p>
-</div>
-</div>
-
-<div class="header-actions">
-
-<div class="search-box">
-<i class="fas fa-search"></i>
-<input type="text" placeholder="Search patients, reports, analytics...">
-</div>
-
-<button class="icon-btn" onclick="toggleTheme()">
-<i class="fas fa-moon" id="theme-icon"></i>
-</button>
-
-<div style="position:relative;">
-<button class="icon-btn" onclick="toggleNotifications()">
-<i class="fas fa-bell"></i>
-<span class="notification-dot"></span>
-</button>
-
-<div class="notification-panel" id="notificationPanel">
-
-<div class="notification-item">
-<i class="fas fa-check-circle" style="color:var(--success);margin-top:4px;"></i>
-<div>
-<div style="font-weight:600;">Detection Completed</div>
-<small style="color:var(--text-muted);">Awaiting backend integration.</small>
-</div>
-</div>
-
-<div class="notification-item">
-<i class="fas fa-file-medical" style="color:var(--primary);margin-top:4px;"></i>
-<div>
-<div style="font-weight:600;">Report Ready</div>
-<small style="color:var(--text-muted);">Professional report generated.</small>
-</div>
-</div>
-
-<div class="notification-item">
-<i class="fas fa-triangle-exclamation" style="color:var(--danger);margin-top:4px;"></i>
-<div>
-<div style="font-weight:600;">High Risk Alert</div>
-<small style="color:var(--text-muted);">Consultation recommended.</small>
-</div>
-</div>
-
-</div>
-</div>
-
-<div class="user-profile">
-    <img src="https://i.pravatar.cc/150?img=12" class="user-avatar" id="profileImage">
-
-    <div>
-        <div style="font-weight:600;" id="profileName">
-            {{ request.user.username }}
+        <!-- Hidden elements to preserve JS compatibility -->
+        <div style="display:none;">
+            <div id="totalScans">0</div>
+            <div id="positiveCases">0</div>
+            <div id="todayScans">0</div>
+            <div id="gaugeNeedle"></div>
+            <button id="calibrationBtn"></button>
+            <div id="historyContainer"></div>
         </div>
 
-        <div style="font-size:.8rem;color:var(--text-muted);">
-            Logged In User
+        <div class="dashboard-layout">
+            <!-- LEFT COLUMN -->
+            <div class="left-col">
+                <!-- Baby Info Card -->
+                <div class="card baby-info-card fade-reveal">
+                    <div class="baby-avatar-container">
+                        <div class="baby-avatar">👶</div>
+                        <div class="baby-stat-group">
+                            <span class="baby-stat-value" id="displayBabyName" style="font-size:1rem; font-family:'Poppins', sans-serif;">--</span>
+                            <span class="baby-stat-label">Patient</span>
+                        </div>
+                    </div>
+                    <div class="baby-details">
+                        <div class="baby-stat-group">
+                            <span class="baby-stat-label">Age</span>
+                            <span class="baby-stat-value"><span id="displayBabyAge">--</span> days</span>
+                        </div>
+                        <div class="baby-stat-group">
+                            <span class="baby-stat-label">Gestational Info</span>
+                            <span class="baby-stat-value" id="displayBabyGest">-- Wks | --</span>
+                        </div>
+                        <div class="baby-stat-group">
+                            <button class="secondary-btn" style="padding:6px 12px; border-radius:8px; font-size:0.75rem; border:1px solid var(--border); background:var(--bg-body); cursor:pointer;" onclick="openBabyModal(false)">Edit Details</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Main Hero Card -->
+                <div class="card hero-card fade-reveal">
+                    <div class="hero-text">
+                        <h2 id="heroGreetingText">Waiting for scan data... 💙</h2>
+                        <p>Your baby's jaundice risk is low.<br>Keep monitoring regularly.</p>
+                        <button class="action-btn" onclick="document.getElementById('fileInput').click()">Start New Scan</button>
+                        <div class="hero-labels">
+                            <span>Safe</span><span>Non-invasive</span><span>AI Assisted</span>
+                        </div>
+                    </div>
+                    
+                    <div class="risk-circle-container">
+                        <div class="risk-circle">
+                            <i class="fas fa-baby"></i>
+                            <div class="label">Current Risk</div>
+                            <div class="value" id="heroRiskLevel">LOW</div>
+                        </div>
+                    </div>
+                    
+                    <div class="hero-mini-cards">
+                        <div class="mini-card">
+                            <i class="fas fa-clock" style="color:var(--primary); background:var(--primary-light); padding:8px; border-radius:50%;"></i>
+                            <div class="content">
+                                <span class="label">Next Scan In</span>
+                                <span class="value">--</span>
+                            </div>
+                        </div>
+                        <div class="mini-card">
+                            <i class="fas fa-chart-line" style="color:var(--success); background:#dcfce7; padding:8px; border-radius:50%;"></i>
+                            <div class="content">
+                                <span class="label">Health Trend</span>
+                                <span class="value">--</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="card fade-reveal">
+                    <h3 style="margin-bottom:1rem;">Upload Baby Skin Image</h3>
+                    
+                    <div class="upload-area" id="drop-zone" onclick="document.getElementById('fileInput').click()">
+                        <i class="fas fa-camera upload-icon"></i>
+                        <h4 style="margin-bottom:6px; font-size:0.95rem;">Capture or Upload Image</h4>
+                        <p style="color:var(--text-muted); font-size:0.8rem;">Take a clear image of your baby's skin under natural light.</p>
+                        <div class="hero-labels" style="justify-content:center; margin-top:0.8rem;">
+                            <span>Safe</span><span>Non-invasive</span><span>AI Assisted</span>
+                        </div>
+                    </div>
+                    
+                    <input type="file" id="fileInput" accept="image/*" hidden>
+                    
+                    <div id="processingSection" style="display:none; margin-top:1.5rem;">
+                        <h4 style="text-align:center; font-size: 0.9rem;">Analyzing Skin...</h4>
+                        <div class="loading-line"><span></span></div>
+                    </div>
+                    
+                    <div class="preview-container">
+                        <div class="preview-box">
+                            <div style="font-size:0.8rem; margin-bottom:6px; color:var(--text-muted);">Original</div>
+                            <div class="placeholder-box" id="originalPlaceholder">Waiting...</div>
+                            <img id="uploadedPreview" style="display:none;">
+                        </div>
+                        <div class="preview-box">
+                            <div style="font-size:0.8rem; margin-bottom:6px; color:var(--text-muted);">Skin ROI</div>
+                            <div class="placeholder-box" id="roiPreviewPlaceholder">Waiting...</div>
+                            <img id="roiPreviewImg" style="display:none;">
+                        </div>
+                        <div class="preview-box">
+                            <div style="font-size:0.8rem; margin-bottom:6px; color:var(--text-muted);">AI Detection</div>
+                            <div class="placeholder-box" id="roiOverlayPlaceholder">Waiting...</div>
+                            <img id="roiOverlayImg" style="display:none;">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Trend Graph -->
+                <div class="card fade-reveal">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+                        <h3>Jaundice Trend <i class="fas fa-info-circle" style="color:var(--text-muted); font-size:0.85rem;"></i></h3>
+                        <select style="border:none; color:var(--text-muted); background:transparent; font-weight:500; font-size:0.85rem; outline:none; cursor:pointer;">
+                            <option>Last 7 Days</option>
+                        </select>
+                    </div>
+                    <div style="height: 200px;">
+                        <canvas id="weeklyChart"></canvas>
+                    </div>
+                </div>
+
+                <!-- FAQs and Tips -->
+                <div class="card fade-reveal" style="margin-bottom: 1.5rem;">
+                    <h3 style="margin-bottom:1rem;">Daily Child Care & FAQs</h3>
+                    <div class="faq-container">
+                        <div class="faq-item">
+                            <h4>1. How often should I scan?</h4>
+                            <p>It is recommended to scan twice a day during the first week, preferably under consistent lighting.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h4>2. Ensure proper lighting</h4>
+                            <p>Always use natural daylight or pure white light when capturing the baby's skin. Avoid direct sunlight or yellow bulbs.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h4>3. When to consult a pediatrician?</h4>
+                            <p>If the AI flags the risk level as High, or if you observe yellowing spreading to the whites of the baby's eyes, consult your doctor immediately.</p>
+                        </div>
+                        <div class="faq-item">
+                            <h4>4. What is a normal bilirubin level?</h4>
+                            <p>Safe levels depend on the baby's age in hours. NeoScan calculates this automatically using the Bhutani nomogram.</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            
+            <!-- RIGHT COLUMN -->
+            <div class="right-col">
+                <!-- Quick Actions (Foldable) -->
+                <div class="card fade-reveal">
+                    <div style="display:flex; justify-content:space-between; align-items:center; cursor:pointer;" onclick="document.getElementById('qa-grid').classList.toggle('folded'); this.querySelector('i').classList.toggle('fa-chevron-up'); this.querySelector('i').classList.toggle('fa-chevron-down');">
+                        <h3>Quick Actions</h3>
+                        <i class="fas fa-chevron-up" style="color:var(--text-muted); font-size: 0.9rem;"></i>
+                    </div>
+                    <div class="quick-actions-grid" id="qa-grid">
+                        <div class="quick-action-item" onclick="document.getElementById('fileInput').click()">
+                            <i class="fas fa-camera" style="background:#eff6ff; color:#3b82f6;"></i>
+                            <span>New Scan</span>
+                        </div>
+                        <div class="quick-action-item" onclick="openReports()">
+                            <i class="fas fa-file-alt" style="background:#f8fafc; color:#64748b;"></i>
+                            <span>View Reports</span>
+                        </div>
+                        <div class="quick-action-item" onclick="window.scrollTo(0, document.body.scrollHeight)">
+                            <i class="fas fa-chart-line" style="background:#eef2ff; color:#6366f1;"></i>
+                            <span>Trend Graph</span>
+                        </div>
+                        <div class="quick-action-item" onclick="toggleChat()">
+                            <i class="fas fa-robot" style="background:#f0fdf4; color:#22c55e;"></i>
+                            <span>NeoBot</span>
+                        </div>
+                        <div class="quick-action-item" onclick="alert('Reminders feature coming soon')">
+                            <i class="fas fa-bell" style="background:#fef3c7; color:#d97706;"></i>
+                            <span>Reminders</span>
+                        </div>
+                        <div class="quick-action-item" onclick="openDoctorPanel()">
+                            <i class="fas fa-stethoscope" style="background:#fce7f3; color:#db2777;"></i>
+                            <span>Doctor Review</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- NeoBot Snippet Card -->
+                <div class="card fade-reveal" style="background: linear-gradient(135deg, #eff6ff, #ffffff); border: 1px solid #bfdbfe;">
+                    <div style="display:flex; gap:0.8rem; align-items:flex-start;">
+                        <div style="background:#3b82f6; color:#ffffff; width:40px; height:40px; border-radius:50%; display:flex; align-items:center; justify-content:center; flex-shrink:0; font-size:1rem; box-shadow: 0 4px 10px rgba(59,130,246,0.25);">
+                            <i class="fas fa-robot"></i>
+                        </div>
+                        <div>
+                            <div style="font-weight:700; margin-bottom:4px; font-size:0.95rem; color:#1e3a8a;">NeoBot Assistant</div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); line-height:1.4;">Hi 👋 I can help you understand the jaundice results today. Ask me anything.</p>
+                            <button onclick="toggleChat()" style="background:#3b82f6; color:#fff; border:none; padding:6px 12px; border-radius:8px; font-weight:600; font-size:0.8rem; margin-top:8px; cursor:pointer; box-shadow: 0 2px 6px rgba(59,130,246,0.15);">Chat with NeoBot &rarr;</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- AI Analysis Result Card -->
+                <div class="card fade-reveal" id="resultCard">
+                    <h3 style="margin-bottom:0.5rem;">AI Analysis Result</h3>
+                    
+                    <div class="result-section">
+                        <div class="result-value" id="bilirubinValue">--</div>
+                        <p style="color:var(--text-muted); font-size:0.8rem;">Predicted Bilirubin Level</p>
+                        
+                        <div style="display:flex; align-items:center; justify-content:center; gap:6px; margin-top:1rem; padding:6px 12px; background:#f8fafc; border:1px solid var(--border); border-radius:20px; display:inline-flex;" id="riskBadge">
+                            <i class="fas fa-clock" id="riskIcon" style="font-size: 0.85rem;"></i>
+                            <span id="riskText" style="font-weight:600; font-size:0.85rem;">Awaiting scan</span>
+                        </div>
+                        
+                        <div style="background:var(--bg-body); padding:0.8rem; border-radius:12px; margin-top:1.25rem; border:1px solid var(--border);">
+                            <div style="font-weight:600; margin-bottom:6px; font-size:0.85rem; display:flex; align-items:center; justify-content:center; gap:6px;">
+                                <i class="fas fa-user-md" style="color:var(--primary);"></i> Clinical Recommendation
+                            </div>
+                            <p style="font-size:0.8rem; color:var(--text-muted); margin:0; line-height:1.4;" id="recommendationText">Submit an image to receive clinical insights.</p>
+                        </div>
+                        
+                        <div id="highRiskAlert" class="high-risk-alert" style="margin-top:1rem;">
+                            <i class="fas fa-exclamation-triangle"></i> HIGH RISK DETECTED<br>
+                            <span style="font-size:0.8rem; font-weight:400;">Immediate pediatric review recommended.</span>
+                        </div>
+                        
+                        <button class="action-btn" id="downloadReportBtn" style="width:100%; justify-content:center; margin-top:1.25rem; display:none;" onclick="downloadPDFReport()">
+                            <i class="fas fa-file-pdf"></i> Download PDF Report
+                        </button>
+                    </div>
+                </div>
+                
+            </div>
         </div>
-    </div>
+    </main>
 </div>
 
-</div>
-
-</header>
-
-<div class="stats-grid">
-
-<div class="stat-card fade-reveal">
-
-<div class="stat-header">
-<div class="stat-icon" style="background:#eff6ff;color:#2563eb;">
-<i class="fas fa-camera"></i>
-</div>
-</div>
-
-<div class="stat-value" id="totalScans">0</div>
-<div class="stat-label">Total Scans</div>
-
-</div>
-
-<div class="stat-card fade-reveal">
-
-<div class="stat-header">
-<div class="stat-icon" style="background:#fee2e2;color:#ef4444;">
-<i class="fas fa-triangle-exclamation"></i>
-</div>
-</div>
-
-<div class="stat-value" id="positiveCases">0</div>
-<div class="stat-label">Positive Cases</div>
-
-</div>
-
-<div class="stat-card fade-reveal">
-
-<div class="stat-header">
-<div class="stat-icon" style="background:#f0fdf4;color:#22c55e;">
-<i class="fas fa-brain"></i>
-</div>
-</div>
-
-<div class="stat-value" style="font-size:1rem;">Model Training in Progress</div>
-<div class="stat-label">Accuracy evaluation ongoing</div>
-
-</div>
-
-<div class="stat-card fade-reveal">
-
-<div class="stat-header">
-<div class="stat-icon" style="background:#faf5ff;color:#9333ea;">
-<i class="fas fa-calendar-day"></i>
-</div>
-</div>
-
-<div class="stat-value" id="todayScans">0</div>
-<div class="stat-label">Today's Scans</div>
-
-</div>
-
-</div>
-
-<div class="dashboard-grid">
-
-<div>
-
-<div class="card fade-reveal">
-
-<div class="card-title">
-Quick Scan
-<span><i class="fas fa-circle-info"></i></span>
-</div>
-
-<div class="upload-area" id="drop-zone">
-
-<i class="fas fa-cloud-upload-alt upload-icon"></i>
-
-<h3>Upload Neonatal Skin Image</h3>
-
-<p style="margin:.7rem 0 1.5rem;color:var(--text-muted);">
-Upload or capture neonatal skin image for AI-based jaundice analysis.
-</p>
-
-<div style="background:var(--bg-body); border:1px solid var(--border); padding:1rem; border-radius:12px; margin-bottom:1.5rem; display:flex; align-items:center; justify-content:space-between;">
-    <div style="display:flex; align-items:center; gap:10px;">
-        <i class="fas fa-baby-carriage" style="font-size:1.5rem; color:var(--primary);"></i>
-        <div style="text-align:left;">
-            <div style="font-weight:600; font-size:0.9rem;">Active Detection Session: <span id="displayBabyName" style="color:var(--primary);">Pending...</span></div>
-            <div style="font-size:0.8rem; color:var(--text-muted);">Age: <span id="displayBabyAge">--</span> Days | Gestational Age: <span id="displayBabyGest">--</span> Weeks</div>
-        </div>
-    </div>
-    <button class="action-btn secondary-btn" style="padding:0.5rem 1rem; font-size:0.8rem;" onclick="openBabyModal(false)">Edit</button>
-</div>
-
-<div class="upload-actions">
-
-<button class="action-btn" onclick="document.getElementById('fileInput').click()">
-<i class="fas fa-upload"></i>
-Upload Image
-</button>
-
-<button class="action-btn secondary-btn" onclick="openCamera()">
-<i class="fas fa-camera"></i>
-Camera
-</button>
-
-<button class="action-btn secondary-btn" onclick="openCalibrationModal()" id="calibrationBtn">
-<i class="fas fa-sliders"></i>
-Calibrate
-</button>
-
-<button class="action-btn secondary-btn" onclick="openBabyModal()">
-<i class="fas fa-plus"></i>
-New Baby
-</button>
-
-</div>
-
-<input type="file" id="fileInput" accept="image/*" hidden>
-
-<div id="processingSection" style="display:none;margin-top:2rem;">
-<h4>Analyzing Skin ROI...</h4>
-<div class="loading-line"><span></span></div>
-</div>
-
-<div class="preview-container">
-
-<div class="preview-box">
-<div>Original Image</div>
-<div class="placeholder-box" id="originalPlaceholder">
-Awaiting upload
-</div>
-<img id="uploadedPreview" style="display:none;">
-</div>
-
-<div class="preview-box">
-<div>Skin ROI Preview</div>
-<div class="placeholder-box" id="roiPreviewPlaceholder">
-Actual selected skin region
-</div>
-<img id="roiPreviewImg" style="display:none;">
-</div>
-
-<div class="preview-box">
-<div>ROI Detection</div>
-<div class="placeholder-box" id="roiOverlayPlaceholder">
-Detection visualization pending
-</div>
-<img id="roiOverlayImg" style="display:none;">
-</div>
-
-</div>
-
-</div>
-
-<!-- Baby History moved to left column -->
-<div class="card fade-reveal" style="margin-top: 1.5rem;">
-
-<div class="card-title">
-Baby History
-<button class="action-btn secondary-btn" onclick="openHistoryModal()">
-View All
-</button>
-</div>
-
-<div class="history-grid" id="historyContainer">
-
-<div class="history-card">
-<img src="https://images.unsplash.com/photo-1519689680058-324335c77eba?auto=format&fit=crop&w=600&q=80">
-<h4>History Empty</h4>
-<p style="color:var(--text-muted);margin-top:6px;">
-Patient scan history will appear here after uploads.
-</p>
-</div>
-
-</div>
-
-</div>
-
-</div> <!-- END LEFT COLUMN -->
-
-<div> <!-- START RIGHT COLUMN -->
-
-<div class="card fade-reveal" id="resultCard">
-
-<div class="card-title">
-Recent Detection Result
-</div>
-
-<div class="result-badge" id="riskBadge" style="background:#f1f5f9; color:#64748b;">
-<i class="fas fa-clock" id="riskIcon"></i>
-<span id="riskText">Awaiting backend analysis</span>
-</div>
-
-<div style="display:flex; flex-direction:column; align-items:center; margin: 1.5rem 0;">
-    <svg viewBox="0 0 200 110" style="width: 250px; max-width: 100%;">
-        <defs>
-            <linearGradient id="gaugeGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                <stop offset="0%" stop-color="var(--success)" />
-                <stop offset="35%" stop-color="var(--success)" />
-                <stop offset="50%" stop-color="var(--warning)" />
-                <stop offset="65%" stop-color="var(--warning)" />
-                <stop offset="85%" stop-color="var(--danger)" />
-                <stop offset="100%" stop-color="var(--danger)" />
-            </linearGradient>
-        </defs>
-        <!-- Background track -->
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="#f0f2f5" stroke-width="20" stroke-linecap="round" />
-        <!-- Colored track -->
-        <path d="M 20 100 A 80 80 0 0 1 180 100" fill="none" stroke="url(#gaugeGradient)" stroke-width="20" stroke-linecap="round" />
-        
-        <!-- Needle -->
-        <g id="gaugeNeedle" style="transform-origin: 100px 100px; transform: rotate(-90deg); transition: transform 1.5s cubic-bezier(0.4, 0, 0.2, 1);">
-            <polygon points="96,100 104,100 100,25" fill="#333" />
-            <circle cx="100" cy="100" r="8" fill="#333" />
-        </g>
-    </svg>
-    <div style="display:flex; justify-content:space-between; width:250px; font-size:0.75rem; color:var(--text-muted); font-weight:600; margin-top:-5px;">
-        <span>Low</span>
-        <span>Med</span>
-        <span>High</span>
-    </div>
-</div>
-
-<div style="text-align:center; margin-bottom:1.5rem;">
-    <span style="font-size:0.9rem; color:var(--text-muted);">Predicted Bilirubin</span>
-    <div style="font-size:2.5rem; font-weight:800; color:var(--primary);" id="bilirubinValue">-- mg/dL</div>
-</div>
-
-<div style="background:var(--bg-body); padding:1rem; border-radius:12px; border:1px solid var(--border); margin-bottom:1rem;">
-<div style="font-weight:600; margin-bottom:5px;"><i class="fas fa-user-md" style="color:var(--primary);"></i> Recommendation</div>
-<p style="font-size:.9rem;color:var(--text-muted);margin:0;" id="recommendationText">
-Submit an image to receive clinical recommendation.
-</p>
-</div>
-
-<div id="highRiskAlert" style="display:none; background:#fee2e2; padding:1rem; border-radius:12px; border:1px solid #ef4444; margin-bottom:1rem; text-align:center;">
-    <div style="color:#ef4444; font-weight:800; font-size:1.1rem; margin-bottom:5px;">
-        <i class="fas fa-triangle-exclamation"></i> HIGH RISK CASE DETECTED
-    </div>
-    <div style="color:#ef4444; font-size:0.9rem; font-weight:600;">Immediate pediatric review recommended.</div>
-</div>
-
-<button class="action-btn" id="downloadReportBtn" style="width:100%; justify-content:center; display:none;" onclick="downloadPDFReport()">
-    <i class="fas fa-file-pdf"></i> Download PDF Report
-</button>
-
-</div>
-
-</div> <!-- END RIGHT COLUMN -->
-
-</div> <!-- END DASHBOARD GRID -->
-
-</main>
-
-</div>
-
+<!-- Modal Overlay -->
 <div class="modal-overlay" id="modalOverlay">
-
-<div class="modal-content">
-
-<div class="modal-header">
-<h2 id="modalTitle">Modal</h2>
-<button class="close-modal" onclick="closeModal()">
-<i class="fas fa-xmark"></i>
-</button>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h2 id="modalTitle" style="font-size: 1.25rem;">Modal</h2>
+            <button class="close-modal" onclick="closeModal()"><i class="fas fa-xmark"></i></button>
+        </div>
+        <div class="modal-body" id="modalBody"></div>
+    </div>
 </div>
 
-<div class="modal-body" id="modalBody">
-</div>
-
-</div>
-
-</div>
-
-<!-- Chatbot UI -->
-<style>
-.chat-widget {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 350px;
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-    display: flex;
-    flex-direction: column;
-    z-index: 1000;
-    overflow: hidden;
-    transform: translateY(120%);
-    transition: transform 0.3s ease;
-}
-.chat-widget.open {
-    transform: translateY(0);
-}
-.chat-header {
-    background: var(--primary);
-    color: white;
-    padding: 15px;
-    font-weight: 600;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-.chat-header i { cursor: pointer; }
-.chat-body {
-    height: 350px;
-    overflow-y: auto;
-    padding: 15px;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    background: var(--bg-body);
-}
-.chat-msg {
-    max-width: 85%;
-    padding: 10px 14px;
-    border-radius: 14px;
-    font-size: 0.9rem;
-    line-height: 1.4;
-}
-.chat-msg.bot {
-    background: var(--card-bg);
-    border: 1px solid var(--border);
-    align-self: flex-start;
-    border-bottom-left-radius: 4px;
-}
-.chat-msg.user {
-    background: var(--primary);
-    color: white;
-    align-self: flex-end;
-    border-bottom-right-radius: 4px;
-}
-.chat-input-area {
-    padding: 10px;
-    background: var(--card-bg);
-    border-top: 1px solid var(--border);
-    display: flex;
-    gap: 8px;
-}
-.chat-input-area input {
-    flex: 1;
-    padding: 10px 14px;
-    border: 1px solid var(--border);
-    border-radius: 20px;
-    background: var(--bg-body);
-    color: var(--text-color);
-    outline: none;
-}
-.chat-input-area button {
-    background: var(--primary);
-    color: white;
-    border: none;
-    border-radius: 50%;
-    width: 40px;
-    height: 40px;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-.chat-toggle {
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
-    width: 60px;
-    height: 60px;
-    background: var(--primary);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    cursor: pointer;
-    box-shadow: 0 5px 15px rgba(37,99,235,0.3);
-    z-index: 999;
-}
-</style>
-
-<div class="chat-toggle" onclick="toggleChat()">
-    <i class="fas fa-comment-medical"></i>
-</div>
-
+<!-- Chatbot -->
+<div class="chat-toggle" onclick="toggleChat()"><i class="fas fa-comment-medical"></i></div>
 <div class="chat-widget" id="chatWidget">
     <div class="chat-header">
         <span><i class="fas fa-robot"></i> NeoBot Assistant</span>
@@ -1387,6 +536,7 @@ Submit an image to receive clinical recommendation.
 </div>
 
 <script>
+
 const modalOverlay = document.getElementById("modalOverlay");
 const modalTitle = document.getElementById("modalTitle");
 const modalBody = document.getElementById("modalBody");
@@ -1464,7 +614,7 @@ openModal("Patient Information Setup",`
 
 <div class="input-group">
 <label>Baby Name</label>
-<input type="text" id="bName" placeholder="Enter baby name" value="Neonatal Patient 1">
+<input type="text" id="bName" placeholder="Enter baby name" value="">
 </div>
 
 <div class="input-group">
@@ -2087,34 +1237,34 @@ function saveApiKey() {
 }
 
 function openReports(){
-    openModal("Clinical Reports",`
+    const babyName = sessionStorage.getItem('babyName') || 'Your Baby';
+    openModal("Scan Reports",`
         <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1.5rem;">
             <div>
-                <h4 style="margin-bottom:5px;">Generate Batch Reports</h4>
-                <p style="font-size:0.9rem; color:var(--text-muted);">Select a date range to export multiple patient reports.</p>
+                <h4 style="margin-bottom:5px;">${babyName}'s Clinical Reports</h4>
+                <p style="font-size:0.9rem; color:var(--text-muted);">View and download past scan results for your records.</p>
             </div>
-            <button class="action-btn"><i class="fas fa-file-export"></i> Export All (CSV)</button>
         </div>
         
         <div style="background:var(--bg-body); border-radius:12px; border:1px solid var(--border); overflow:hidden;">
             <table style="width:100%; border-collapse:collapse; text-align:left;">
                 <tr style="background:#f1f5f9; border-bottom:1px solid var(--border);">
                     <th style="padding:12px;">Date</th>
-                    <th style="padding:12px;">Patient</th>
-                    <th style="padding:12px;">Type</th>
+                    <th style="padding:12px;">Scan Type</th>
+                    <th style="padding:12px;">Result</th>
                     <th style="padding:12px;">Action</th>
                 </tr>
                 <tr>
                     <td style="padding:12px; border-bottom:1px solid var(--border);">Today</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);">Aarav Sharma</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);">Initial Scan</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;"><i class="fas fa-file-pdf"></i> Download</button></td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Routine Scan</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success); font-weight:600;">Low Risk</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;" onclick="downloadPDFReport()"><i class="fas fa-file-pdf"></i> Download</button></td>
                 </tr>
                 <tr>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);">Yesterday</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);">Baby Smith</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);">Follow-up</td>
-                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;"><i class="fas fa-file-pdf"></i> Download</button></td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">2 Days Ago</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);">Initial Scan</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border); color:var(--success); font-weight:600;">Low Risk</td>
+                    <td style="padding:12px; border-bottom:1px solid var(--border);"><button class="action-btn" style="padding:5px 10px; font-size:0.8rem;" onclick="alert('No PDF available for this older scan.')"><i class="fas fa-file-pdf"></i> Download</button></td>
                 </tr>
             </table>
         </div>
@@ -2369,8 +1519,8 @@ type: 'line',
 data: {
 labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
 datasets: [{
-label: 'Weekly Scans',
-data: [0,0,0,0,0,0,0],
+label: 'Bilirubin Trend (mg/dL)',
+data: [14.2, 13.8, 12.1, 11.5, 9.8, 8.5, 7.2],
 borderColor:'#2563eb',
 backgroundColor:'rgba(37,99,235,.1)',
 fill:true,
@@ -2412,76 +1562,7 @@ document.querySelectorAll('.fade-reveal').forEach(el=>{
 revealObserver.observe(el);
 });
 
-// --- CHATBOT LOGIC ---
-let chatHistory = [];
-
-function toggleChat() {
-    document.getElementById("chatWidget").classList.toggle("open");
-}
-
-function handleChatEnter(event) {
-    if (event.key === "Enter") {
-        sendChatMessage();
-    }
-}
-
-function sendChatMessage() {
-    const input = document.getElementById("chatInput");
-    const message = input.value.trim();
-    if (!message) return;
-    
-    const chatBody = document.getElementById("chatBody");
-    
-    // Add user message to UI
-    chatBody.innerHTML += `<div class="chat-msg user">${message}</div>`;
-    input.value = "";
-    
-    // Scroll to bottom
-    chatBody.scrollTop = chatBody.scrollHeight;
-    
-    // Add "Typing..." indicator
-    const typingId = "typing-" + Date.now();
-    chatBody.innerHTML += `<div class="chat-msg bot" id="${typingId}">Typing... <i class="fas fa-circle-notch fa-spin"></i></div>`;
-    chatBody.scrollTop = chatBody.scrollHeight;
-
-    // Call Backend API
-    fetch('/api/chat/', {
-        method: 'POST',
-        headers: {
-            'Content-Type': 'application/json',
-            'X-CSRFToken': getCookie('csrftoken') // Function is already defined earlier
-        },
-        body: JSON.stringify({
-            message: message,
-            history: chatHistory
-        })
-    })
-    .then(response => response.json())
-    .then(data => {
-        // Remove typing indicator
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-        
-        if (data.status === "success") {
-            const botReply = data.reply;
-            chatBody.innerHTML += `<div class="chat-msg bot">${botReply.replace(/\n/g, '<br>')}</div>`;
-            
-            // Save to history to maintain context
-            chatHistory.push({ role: "user", content: message });
-            chatHistory.push({ role: "assistant", content: botReply });
-        } else {
-            chatBody.innerHTML += `<div class="chat-msg bot" style="color:red;">Error: ${data.message}</div>`;
-        }
-        chatBody.scrollTop = chatBody.scrollHeight;
-    })
-    .catch(error => {
-        const typingEl = document.getElementById(typingId);
-        if (typingEl) typingEl.remove();
-        chatBody.innerHTML += `<div class="chat-msg bot" style="color:red;">Connection error. Make sure the server is running.</div>`;
-        console.error("Chat Error:", error);
-    });
-}
-// --- END CHATBOT LOGIC ---
+// Chatbot JS moved to dedicated page
 
 // --- STARTUP LOGIC ---
 window.onload = function() {
@@ -2505,6 +1586,7 @@ window.onload = function() {
     }
 }
 // --- END STARTUP LOGIC ---
+
 
 </script>
 

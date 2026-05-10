@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeoScan | Learn & Methodology</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <style>
+        :root {
+            --primary: #3b82f6;
+            --primary-light: #eff6ff;
+            --secondary: #60a5fa;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --bg-light: #ffffff;
+            --bg-accent: #f8fafc;
+            --border: #e2e8f0;
+            --shadow: 0 20px 40px rgba(0,0,0,0.04);
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; scroll-behavior: smooth; }
+        body { font-family: 'Inter', sans-serif; background: var(--bg-accent); color: var(--text-main); overflow-x: hidden; }
+        h1, h2, h3, h4, .logo { font-family: 'Poppins', sans-serif; }
+        a { text-decoration: none; color: inherit; transition: var(--transition); }
+        ul { list-style: none; }
+
+        .container { max-width: 1100px; margin: 0 auto; padding: 0 2rem; }
+        
+        /* Navigation */
+        nav { position: fixed; top: 0; width: 100%; height: 80px; background: rgba(255,255,255,0.95); backdrop-filter: blur(10px); z-index: 1000; border-bottom: 1px solid var(--border); display: flex; align-items: center; }
+        .nav-content { display: flex; justify-content: space-between; align-items: center; width: 100%; }
+        .logo { color: var(--text-main); font-size: 1.5rem; display: flex; align-items: center; gap: 8px; font-weight: 700; }
+        .logo i { color: var(--primary); font-size: 1.8rem; }
+        
+        .nav-links { display: flex; gap: 2.5rem; align-items: center; }
+        .nav-links a { color: var(--text-main); font-weight: 500; font-size: 0.95rem; position: relative; }
+        .nav-links a:hover, .nav-links a.active { color: var(--primary); }
+
+        .btn { padding: 10px 20px; border-radius: 8px; font-weight: 600; cursor: pointer; border: none; transition: var(--transition); display: inline-flex; align-items: center; justify-content: center; font-size: 0.95rem; }
+        .btn-outline { background: transparent; border: 1px solid var(--primary); color: var(--primary); }
+        .btn-outline:hover { background: var(--primary-light); }
+
+        /* Page Header */
+        .page-header { padding: 140px 0 60px; background: white; text-align: center; border-bottom: 1px solid var(--border); position: relative; overflow: hidden; }
+        .page-header h1 { font-size: 3.5rem; margin-bottom: 1rem; color: var(--text-main); font-weight: 800; letter-spacing: -1px; }
+        .page-header p { font-size: 1.1rem; color: var(--text-muted); max-width: 600px; margin: 0 auto; line-height: 1.6; }
+        .badge-sub { display: inline-flex; padding: 6px 12px; background: var(--primary-light); color: var(--primary); border-radius: 20px; font-weight: 600; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; }
+
+        /* Content Sections */
+        .content-section { padding: 5rem 0; }
+        .content-card { background: white; border-radius: 24px; padding: 3rem; box-shadow: var(--shadow); border: 1px solid var(--border); margin-bottom: 3rem; }
+        
+        .section-title { font-size: 2rem; margin-bottom: 1.5rem; display: flex; align-items: center; gap: 15px; }
+        .section-title i { color: var(--primary); background: var(--primary-light); padding: 12px; border-radius: 12px; font-size: 1.4rem; }
+        
+        .text-content { font-size: 1.05rem; color: #475569; line-height: 1.7; margin-bottom: 2rem; }
+        
+        /* Grid Layouts */
+        .info-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 3rem; align-items: center; }
+        .risk-levels { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 2rem; }
+        
+        .risk-card { padding: 2rem; border-radius: 16px; border: 1px solid var(--border); text-align: center; transition: var(--transition); }
+        .risk-card:hover { transform: translateY(-5px); }
+        .risk-card h4 { font-size: 1.2rem; margin-bottom: 0.5rem; }
+        .risk-card p { font-size: 0.9rem; color: var(--text-muted); }
+        .risk-low { border-top: 4px solid #10b981; }
+        .risk-med { border-top: 4px solid #f59e0b; }
+        .risk-high { border-top: 4px solid #ef4444; }
+
+        /* Images & Graphs */
+        .graph-container { background: var(--bg-accent); border-radius: 16px; padding: 2rem; text-align: center; border: 1px dashed var(--border); }
+        .graph-container img { max-width: 100%; border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.05); }
+        .graph-caption { margin-top: 1rem; font-size: 0.85rem; color: var(--text-muted); font-style: italic; }
+
+        /* Methodology List */
+        .method-list { display: flex; flex-direction: column; gap: 1.5rem; }
+        .method-item { display: flex; gap: 1.5rem; }
+        .method-number { font-family: 'Poppins', sans-serif; font-size: 2.5rem; font-weight: 800; color: var(--primary-light); line-height: 1; -webkit-text-stroke: 1px var(--primary); }
+        .method-text h4 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-main); }
+        .method-text p { font-size: 0.95rem; color: var(--text-muted); line-height: 1.6; }
+
+        footer { background: white; border-top: 1px solid var(--border); padding: 3rem 0; text-align: center; margin-top: 4rem; }
+
+        @media (max-width: 768px) {
+            .info-grid { grid-template-columns: 1fr; }
+            .risk-levels { grid-template-columns: 1fr; }
+            .page-header h1 { font-size: 2.5rem; }
+            .content-card { padding: 2rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <nav>
+        <div class="container nav-content">
+            <a href="{% url 'home' %}" class="logo"><i class="fas fa-crosshairs"></i> NeoScan</a>
+            <div class="nav-links">
+                <a href="{% url 'home' %}">Home</a>
+                <a href="#" class="active">Learn</a>
+            </div>
+            <a href="{% url 'home' %}" class="btn btn-outline"><i class="fas fa-arrow-left"></i> Back to Home</a>
+        </div>
+    </nav>
+
+    <header class="page-header">
+        <div class="container">
+            <span class="badge-sub">Information Center</span>
+            <h1>Understanding Jaundice</h1>
+            <p>Explore the science behind neonatal jaundice, clinical risk levels, and how NeoScan AI ensures accurate, non-invasive screening.</p>
+        </div>
+    </header>
+
+    <section class="content-section">
+        <div class="container">
+            
+            <!-- What is Jaundice -->
+            <div class="content-card">
+                <div class="info-grid">
+                    <div>
+                        <h2 class="section-title"><i class="fas fa-baby"></i> What is Neonatal Jaundice?</h2>
+                        <div class="text-content">
+                            <p>Neonatal jaundice is a highly common condition affecting newborns, characterized by a yellowing of the skin and the whites of the eyes. It occurs when there is a buildup of <strong>bilirubin</strong> in the baby's blood.</p>
+                            <br>
+                            <p>Bilirubin is a yellow pigment produced during the normal breakdown of red blood cells. Because a newborn's liver is still immature, it often cannot process and remove bilirubin quickly enough. While usually harmless, excessively high levels can lead to severe complications like <em>Kernicterus</em> (permanent brain damage).</p>
+                        </div>
+                    </div>
+                    <div class="graph-container">
+                        <img src="https://my.clevelandclinic.org/-/scassets/images/org/health/articles/22263-jaudince-in-newborns" alt="Jaundice visual representation">
+                        <p class="graph-caption">Visible yellowing of the skin is the primary physical indicator of jaundice.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Risk Levels & Nomogram -->
+            <div class="content-card">
+                <h2 class="section-title"><i class="fas fa-chart-area"></i> Clinical Risk Levels (Bhutani Nomogram)</h2>
+                <div class="text-content">
+                    <p>Pediatricians assess the severity of jaundice by comparing the infant's age (in hours) against their Total Serum Bilirubin (TSB) levels. This creates distinct risk zones. NeoScan AI utilizes these standard clinical zones to provide actionable insights.</p>
+                </div>
+                
+                <div class="graph-container" style="margin: 2rem 0;">
+                    <img src="https://th.bing.com/th/id/OIP.w0FvS5lWnKEDRkU5i4B50wHaFj?rs=1&pid=ImgDetMain" alt="Bhutani Nomogram Graph" style="max-height: 400px; object-fit: contain; width: 100%;">
+                    <p class="graph-caption">The Bhutani Nomogram: Hours of age vs Total Serum Bilirubin (mg/dL)</p>
+                </div>
+
+                <div class="risk-levels">
+                    <div class="risk-card risk-low">
+                        <h4>Low Risk Zone</h4>
+                        <p>Bilirubin levels are within safe physiological limits. Routine monitoring is sufficient.</p>
+                    </div>
+                    <div class="risk-card risk-med">
+                        <h4>Intermediate Risk</h4>
+                        <p>Levels are elevated. Frequent monitoring is required to ensure levels do not spike.</p>
+                    </div>
+                    <div class="risk-card risk-high">
+                        <h4>High Risk Zone</h4>
+                        <p>Immediate clinical intervention (such as phototherapy) is strongly recommended.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Methodology -->
+            <div class="content-card">
+                <h2 class="section-title"><i class="fas fa-microchip"></i> Our AI Methodology</h2>
+                <div class="text-content">
+                    <p>NeoScan replaces subjective visual estimations with objective, data-driven computer vision. Here is how our underlying technology guarantees high accuracy across different environments.</p>
+                </div>
+
+                <div class="info-grid">
+                    <div class="method-list">
+                        <div class="method-item">
+                            <div class="method-number">01</div>
+                            <div class="method-text">
+                                <h4>Gray World Light Calibration</h4>
+                                <p>Smartphone cameras have different sensors, and home lighting can distort skin color. We utilize the Gray World Algorithm to neutralize ambient color temperature, standardizing the image before analysis.</p>
+                            </div>
+                        </div>
+                        <div class="method-item">
+                            <div class="method-number">02</div>
+                            <div class="method-text">
+                                <h4>Skin ROI Extraction</h4>
+                                <p>The system intelligently crops out backgrounds, clothing, and shadows to isolate the Region of Interest (ROI)—the pure skin pixels—to ensure noise-free data extraction.</p>
+                            </div>
+                        </div>
+                        <div class="method-item">
+                            <div class="method-number">03</div>
+                            <div class="method-text">
+                                <h4>Random Forest Prediction Model</h4>
+                                <p>Features like RGB ratios and YCbCr luminance are extracted and fed into a Random Forest Regression model. Trained on verified clinical datasets, it outputs an estimated Total Serum Bilirubin score with 92%+ correlation to lab tests.</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="graph-container">
+                        <img src="https://media.springernature.com/m685/springer-static/image/art%3A10.1038%2Fs41598-026-40515-5/MediaObjects/41598_2026_40515_Fig1_HTML.png" alt="Calibration and AI Workflow">
+                        <p class="graph-caption">Pipeline: Image Capture &rarr; Calibration &rarr; Feature Extraction &rarr; Risk Prediction</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <h3 style="color: var(--text-main); margin-bottom: 0.5rem;"><i class="fas fa-crosshairs" style="color: var(--primary);"></i> NeoScan</h3>
+            <p style="font-size: 0.85rem; color: var(--text-muted);">Bridging the gap between home care and clinical accuracy.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

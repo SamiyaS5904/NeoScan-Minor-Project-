@@ -554,35 +554,33 @@
             <form method="POST" action="{% url 'register' %}">
                 {% csrf_token %}
 
-                <div class="form-group">
-
-                    <label>Full Name</label>
-
-                    <input 
-                        type="text"
-                        name="fullname"
-                        placeholder="Enter Full Name"
-                        required
-                    >
-
+                <div class="form-group" style="display:flex; gap: 15px; margin-bottom: 20px;">
+                    <label style="flex:1; position:relative; cursor:pointer;">
+                        <input type="radio" name="role" value="parent" checked style="position:absolute; opacity:0;" onchange="this.parentElement.style.borderColor='var(--primary)'; this.parentElement.style.background='var(--bg-light)'; this.parentElement.nextElementSibling.style.borderColor='#ddd'; this.parentElement.nextElementSibling.style.background='transparent';">
+                        <div style="padding: 15px; border: 2px solid var(--primary); border-radius: 12px; text-align: center; background: var(--bg-light); transition: var(--transition);">
+                            <i class="fas fa-baby" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; display:block;"></i>
+                            <span style="font-weight:600; font-size:0.9rem;">Parent</span>
+                        </div>
+                    </label>
+                    <label style="flex:1; position:relative; cursor:pointer;">
+                        <input type="radio" name="role" value="doctor" style="position:absolute; opacity:0;" onchange="this.parentElement.style.borderColor='var(--primary)'; this.parentElement.style.background='var(--bg-light)'; this.parentElement.previousElementSibling.style.borderColor='#ddd'; this.parentElement.previousElementSibling.style.background='transparent';">
+                        <div style="padding: 15px; border: 2px solid #ddd; border-radius: 12px; text-align: center; transition: var(--transition);">
+                            <i class="fas fa-user-md" style="font-size: 1.5rem; color: var(--primary); margin-bottom: 8px; display:block;"></i>
+                            <span style="font-weight:600; font-size:0.9rem;">Doctor</span>
+                        </div>
+                    </label>
                 </div>
 
                 <div class="form-group">
-    <label>Username</label>
-    <input type="text" name="username" placeholder="Username" required>
-</div>
+                    <input type="text" name="fullname" placeholder="Full Name" required>
+                </div>
 
                 <div class="form-group">
+                    <input type="text" name="username" placeholder="Username" required>
+                </div>
 
-                    <label>Email</label>
-
-                    <input 
-                        type="email"
-                        name="email"
-                        placeholder="Your Email"
-                        required
-                    >
-
+                <div class="form-group">
+                    <input type="email" name="email" placeholder="Email Address" required>
                 </div>
 
                 <div class="form-group">

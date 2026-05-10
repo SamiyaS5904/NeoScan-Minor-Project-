@@ -9,8 +9,8 @@ from django.conf import settings
 # We will define the paths to your models here. 
 # You will need to move your .pkl files into the 'ml_models' folder.
 MODEL_DIR = os.path.join(settings.BASE_DIR.parent, 'ml_models')
-model_path = os.path.join(MODEL_DIR, 'neoscan_xgboost.pkl')
-scaler_path = os.path.join(MODEL_DIR, 'neoscan_scaler.pkl')
+model_path = os.path.join(MODEL_DIR, 'neoscan_xgboost_final.pkl')
+scaler_path = os.path.join(MODEL_DIR, 'neoscan_scaler_final.pkl')
 
 xgboost_model = None
 scaler = None
@@ -39,17 +39,52 @@ def preprocess_and_predict(r, g, b, s, lab_l, lab_a, lab_b, age_days, gestationa
     r_minus_b = r - b
     lab_ratio = lab_a / lab_b if lab_b != 0 else 0
     age_labb = age_days * lab_b
+     # NEW FEATURES (must match training)
+
+    r_div_b = r / b if b != 0 else 0
+
+    g_div_b = g / b if b != 0 else 0
+
+    yellow_index = (
+            r + g
+        ) / (b + 1)
+
+    lab_a_minus_b = (
+            lab_a - lab_b
+        )
+
+    rgb_mean = (
+            r + g + b
+        ) / 3
+
+    s_times_labb = (
+            s * lab_b    )
     
-    # 2. Build DataFrame (matching your training feature names)
     features = pd.DataFrame([{
-        'R': r, 'G': g, 'B': b, 'S': s,
-        'LAB_L': lab_l, 'LAB_A': lab_a, 'LAB_B': lab_b,
-        'age_days': age_days,
-        'gestational_age': gestational_age,
-        'R_minus_B': r_minus_b,
-        'LAB_ratio': lab_ratio,
-        'Age_LABB': age_labb
-    }])
+
+    'R': r,
+    'G': g,
+    'B': b,
+    'S': s,
+
+    'LAB_L': lab_l,
+    'LAB_A': lab_a,
+    'LAB_B': lab_b,
+
+    'age_days': age_days,
+    'gestational_age': gestational_age,
+
+    'R_minus_B': r_minus_b,
+    'LAB_ratio': lab_ratio,
+    'Age_LABB': age_labb,
+
+    'R_div_B': r_div_b,
+    'G_div_B': g_div_b,
+    'Yellow_Index': yellow_index,
+    'LAB_A_minus_B': lab_a_minus_b,
+    'RGB_mean': rgb_mean,
+    'S_times_LABB': s_times_labb
+}])
     
     # 3. Scale Features
     features_scaled = scaler.transform(features)
@@ -59,28 +94,86 @@ def preprocess_and_predict(r, g, b, s, lab_l, lab_a, lab_b, age_days, gestationa
     return float(prediction)
 
 # --- CLINICAL LOGIC ---
-def get_clinical_risk(bilirubin, age_days):
-    """Simplified Bhutani-inspired age-based logic"""
-    if age_days <= 1:
-        if bilirubin < 5: return "Low Risk"
-        if bilirubin < 8: return "Intermediate Risk"
-        return "High Risk"
-    elif age_days <= 2:
-        if bilirubin < 8: return "Low Risk"
-        if bilirubin < 12: return "Intermediate Risk"
-        return "High Risk"
-    else:
-        if bilirubin < 12: return "Low Risk"
-        if bilirubin < 15: return "Intermediate Risk"
-        return "High Risk"
 
-def get_recommendation(risk_zone):
-    if risk_zone == "Low Risk":
-        return "Routine clinical care and feeding."
-    elif risk_zone == "Intermediate Risk":
-        return "Monitor closely. Consider repeat testing in 12-24 hours."
+def get_clinical_risk(
+    bilirubin,
+    age_days
+):
+    """
+    Bhutani-inspired
+    neonatal jaundice risk
+    categorization
+    """
+
+    # Day 1 (0–24 hrs)
+    if age_days <= 1:
+
+        if bilirubin < 5:
+            return "Low Risk"
+
+        elif bilirubin < 8:
+            return "Intermediate Risk"
+
+        else:
+            return "High Risk"
+
+    # Day 2 (24–48 hrs)
+    elif age_days <= 2:
+
+        if bilirubin < 6:
+            return "Low Risk"
+
+        elif bilirubin < 11:
+            return "Intermediate Risk"
+
+        else:
+            return "High Risk"
+
+    # Day 3+ (48+ hrs)
     else:
-        return "Immediate medical evaluation for potential phototherapy."
+
+        if bilirubin < 8:
+            return "Low Risk"
+
+        elif bilirubin < 12:
+            return "Intermediate Risk"
+
+        else:
+            return "High Risk"
+
+
+def get_recommendation(
+    risk_zone
+):
+
+    if risk_zone == "Low Risk":
+
+        return (
+            "Routine clinical "
+            "care and regular "
+            "feeding advised."
+        )
+
+    elif risk_zone == (
+        "Intermediate Risk"
+    ):
+
+        return (
+            "Monitor closely. "
+            "Repeat scan/testing "
+            "recommended within "
+            "12–24 hours."
+        )
+
+    else:
+
+        return (
+            "Immediate medical "
+            "evaluation advised. "
+            "Consult pediatrician "
+            "for possible "
+            "phototherapy."
+        )
 
 # --- IMAGE PROCESSING ---
 import cv2

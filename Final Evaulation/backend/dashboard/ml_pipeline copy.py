@@ -9,8 +9,8 @@ from django.conf import settings
 # We will define the paths to your models here. 
 # You will need to move your .pkl files into the 'ml_models' folder.
 MODEL_DIR = os.path.join(settings.BASE_DIR.parent, 'ml_models')
-model_path = os.path.join(MODEL_DIR, 'neoscan_randomforest_final.pkl')
-scaler_path = os.path.join(MODEL_DIR, 'neoscan_scaler_rf_final.pkl')
+model_path = os.path.join(MODEL_DIR, 'neoscan_xgboost_final.pkl')
+scaler_path = os.path.join(MODEL_DIR, 'neoscan_scaler_final.pkl')
 
 xgboost_model = None
 scaler = None
@@ -30,14 +30,14 @@ def load_models():
 load_models()
 
 # --- PREPROCESSING & PREDICTION ---
-def preprocess_and_predict(r, g, b,h, s,v, lab_l, lab_a, lab_b, age_days, gestational_age):
+def preprocess_and_predict(r, g, b, s, lab_l, lab_a, lab_b, age_days, gestational_age):
     # Ensure models are loaded
     if xgboost_model is None or scaler is None:
         raise Exception("Models are not loaded. Please ensure .pkl files are in the ml_models directory.")
 
     # 1. Feature Engineering (As per your details)
     r_minus_b = r - b
-    lab_ratio = lab_a / (lab_a + 1e-6)
+    lab_ratio = lab_a / lab_b if lab_b != 0 else 0
     age_labb = age_days * lab_b
      # NEW FEATURES (must match training)
 
@@ -65,10 +65,7 @@ def preprocess_and_predict(r, g, b,h, s,v, lab_l, lab_a, lab_b, age_days, gestat
     'R': r,
     'G': g,
     'B': b,
-
-    'H': h,
     'S': s,
-    'V': v,
 
     'LAB_L': lab_l,
     'LAB_A': lab_a,
@@ -77,27 +74,18 @@ def preprocess_and_predict(r, g, b,h, s,v, lab_l, lab_a, lab_b, age_days, gestat
     'age_days': age_days,
     'gestational_age': gestational_age,
 
-    # TEMP value if no input yet
-    'weight': 3.0,
-
     'R_minus_B': r_minus_b,
+    'LAB_ratio': lab_ratio,
+    'Age_LABB': age_labb,
 
-    'R_over_GB': (
-        r / (g + b + 1e-6)
-    ),
-
-    'LAB_ratio': (
-        lab_b / (lab_a + 1e-6)
-    ),
-
-    'S_over_V': (
-        s / (v + 1e-6)
-    ),
-
-    'Age_LABB': (
-        age_days * lab_b
-    )
+    'R_div_B': r_div_b,
+    'G_div_B': g_div_b,
+    'Yellow_Index': yellow_index,
+    'LAB_A_minus_B': lab_a_minus_b,
+    'RGB_mean': rgb_mean,
+    'S_times_LABB': s_times_labb
 }])
+    
     # 3. Scale Features
     features_scaled = scaler.transform(features)
     
@@ -312,18 +300,14 @@ def extract_features_from_image(image_bytes, calibration_profile=None):
     
     # Return features as expected by the ML model
     return {
-    'R': float(mean_rgb[2]),
-    'G': float(mean_rgb[1]),
-    'B': float(mean_rgb[0]),
+        'R': float(mean_rgb[2]),
+        'G': float(mean_rgb[1]),
+        'B': float(mean_rgb[0]),
+        'S': float(mean_hsv[1]), # Saturation channel
+        'LAB_L': float(mean_lab[0]),
+        'LAB_A': float(mean_lab[1]),
+        'LAB_B': float(mean_lab[2]),
+        'roi_image': roi_b64,
+        'roi_overlay': overlay_b64
+    }
 
-    'H': float(mean_hsv[0]),
-    'S': float(mean_hsv[1]),
-    'V': float(mean_hsv[2]),
-
-    'LAB_L': float(mean_lab[0]),
-    'LAB_A': float(mean_lab[1]),
-    'LAB_B': float(mean_lab[2]),
-
-    'roi_image': roi_b64,
-    'roi_overlay': overlay_b64
-}

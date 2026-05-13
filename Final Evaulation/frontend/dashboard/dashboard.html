@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeoScan AI - Premium Dashboard</title>
+<title>NeoScan AI </title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -339,7 +339,7 @@
                             <i class="fas fa-chart-line" style="color:var(--success); background:#dcfce7; padding:8px; border-radius:50%;"></i>
                             <div class="content">
                                 <span class="label">Health Trend</span>
-                                <span class="value">--</span>
+                                <span class="value" id="healthTrendValue">--</span>
                             </div>
                         </div>
                     </div>
@@ -447,14 +447,7 @@
                             <i class="fas fa-robot" style="background:#f0fdf4; color:#22c55e;"></i>
                             <span>NeoBot</span>
                         </div>
-                        <div class="quick-action-item" onclick="alert('Reminders feature coming soon')">
-                            <i class="fas fa-bell" style="background:#fef3c7; color:#d97706;"></i>
-                            <span>Reminders</span>
-                        </div>
-                        <div class="quick-action-item" onclick="openDoctorPanel()">
-                            <i class="fas fa-stethoscope" style="background:#fce7f3; color:#db2777;"></i>
-                            <span>Doctor Review</span>
-                        </div>
+                       
                     </div>
                 </div>
 
@@ -852,8 +845,96 @@ fetch('/api/predict/', {
         
         // Update Result Card
         document.getElementById("bilirubinValue").innerText = data.predicted_bilirubin + " mg/dL";
+        document.getElementById(
+"roiPreviewPlaceholder"
+).style.display = "none";
+
+document.getElementById(
+"roiOverlayPlaceholder"
+).style.display = "none";
+
+document.getElementById(
+"roiPreviewImg"
+).style.display = "block";
+
+document.getElementById(
+"roiOverlayImg"
+).style.display = "block";
+
+document.getElementById(
+"roiPreviewImg"
+).src =
+"data:image/jpeg;base64,"
++ data.roi_image;
+
+document.getElementById(
+"roiOverlayImg"
+).src =
+"data:image/jpeg;base64,"
++ data.roi_overlay;
+        document.getElementById(
+"roiImage"
+).src =
+"data:image/jpeg;base64,"
++ data.roi_image;
+
+document.getElementById(
+"overlayImage"
+).src =
+"data:image/jpeg;base64,"
++ data.roi_overlay;
+        document.getElementById(
+    "heroRiskLevel"
+).innerText =
+data.predicted_bilirubin
++ " mg/dL";
+
+document.getElementById(
+    "healthTrendValue"
+).innerText =
+data.predicted_bilirubin
++ " mg/dL";
+        // Update top current risk card
+document.getElementById(
+    "currentRiskValue"
+).innerText =
+data.predicted_bilirubin
++ " mg/dL";
+
+// Update trend card
+document.getElementById(
+    "trendValue"
+).innerText =
+data.predicted_bilirubin
++ " mg/dL";
         document.getElementById("recommendationText").innerText = data.recommendation;
-        
+        if (
+    data.predicted_bilirubin < 8
+) {
+    document.getElementById(
+        "heroGreetingText"
+    ).innerText =
+    "Low Risk ";
+
+} else if (
+    data.predicted_bilirubin < 12
+) {
+    document.getElementById(
+        "heroGreetingText"
+    ).innerText =
+    "Intermediate Risk";
+
+} else {
+    document.getElementById(
+        "heroGreetingText"
+    ).innerText =
+    "High Risk";
+}
+
+        document.getElementById(
+    "heroRiskLevel"
+).innerText =
+data.risk_zone;
         const riskBadge = document.getElementById("riskBadge");
         const riskText = document.getElementById("riskText");
         const riskIcon = document.getElementById("riskIcon");
@@ -1520,7 +1601,7 @@ data: {
 labels: ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],
 datasets: [{
 label: 'Bilirubin Trend (mg/dL)',
-data: [14.2, 13.8, 12.1, 11.5, 9.8, 8.5, 7.2],
+data: [],
 borderColor:'#2563eb',
 backgroundColor:'rgba(37,99,235,.1)',
 fill:true,

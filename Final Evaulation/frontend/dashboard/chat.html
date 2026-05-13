@@ -15,6 +15,21 @@
         --text-muted: #64748b;
         --border: #e2e8f0;
     }
+    .quick-btn{
+background:#eff6ff;
+border:none;
+padding:8px 14px;
+border-radius:20px;
+cursor:pointer;
+font-size:.85rem;
+color:#2563eb;
+font-weight:500;
+transition:.2s;
+}
+
+.quick-btn:hover{
+background:#dbeafe;
+}
     [data-theme="dark"] {
         --bg-body: #0f172a;
         --bg-card: #1e293b;
@@ -71,9 +86,60 @@
                 <div style="font-size:0.75rem; font-weight:400; opacity:0.8;">Specialized in Neonatal Jaundice</div>
             </div>
         </div>
-        <div class="chat-body" id="chatBody">
-            <div class="chat-msg bot">Hello! I am NeoBot, your medical AI assistant. I can help answer your questions about neonatal jaundice, skin scanning, and general newborn care. How can I assist you today?</div>
-        </div>
+    
+        <div class="chat-body"
+id="chatBody">
+
+<div class="chat-msg bot">
+Hello! I am NeoBot, your medical AI assistant.
+I can help answer your questions about
+neonatal jaundice, skin scanning, and
+general newborn care.
+How can I assist you today?
+</div>
+
+<div
+style="
+display:flex;
+flex-wrap:wrap;
+gap:8px;
+margin-top:8px;
+margin-bottom:10px;
+">
+
+<button
+class="quick-btn"
+onclick="quickQuestion('What is neonatal jaundice?')">
+What is Jaundice?
+</button>
+
+<button
+class="quick-btn"
+onclick="quickQuestion('How to scan baby skin?')">
+How to Scan?
+</button>
+
+<button
+class="quick-btn"
+onclick="quickQuestion('High bilirubin risk')">
+High Bilirubin
+</button>
+
+<button
+class="quick-btn"
+onclick="quickQuestion('Baby care tips')">
+Baby Care
+</button>
+
+<button
+class="quick-btn"
+onclick="quickQuestion('When should I consult a doctor?')">
+Consult Doctor
+</button>
+
+</div>
+
+</div>
         <div class="chat-input-area">
             <input type="text" id="chatInput" placeholder="Ask NeoBot a question..." onkeypress="handleChatEnter(event)">
             <button onclick="sendChatMessage()"><i class="fas fa-paper-plane"></i></button>
@@ -104,7 +170,13 @@
         }
         return cookieValue;
     }
+function quickQuestion(text){
+document.getElementById(
+"chatInput"
+).value = text;
 
+sendChatMessage();
+}
     function sendChatMessage() {
         const input = document.getElementById("chatInput");
         const message = input.value.trim();

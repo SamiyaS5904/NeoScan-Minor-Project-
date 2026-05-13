@@ -275,12 +275,24 @@
         </header>
 
         <!-- Stats -->
+         <div class="card fade-reveal" style="margin-bottom:1.5rem;">
+    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
+        <h3>Bilirubin Trend Analysis</h3>
+        <span style="font-size:0.8rem; color:var(--text-muted);">
+            Last 7 Days
+        </span>
+    </div>
+
+    <div style="height:300px;">
+        <canvas id="bilirubinChart"></canvas>
+    </div>
+</div>
         <div class="admin-stats">
             <div class="card stat-card fade-reveal">
                 <div class="stat-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fas fa-users"></i></div>
                 <div>
                     <div style="color:var(--text-muted); font-size:0.8rem;">Total Users</div>
-                    <div style="font-size:1.5rem; font-weight:700;">256</div>
+                    <div style="font-size:1.5rem; font-weight:700;">150</div>
                     <div style="color:var(--success); font-size:0.75rem;">+12 this week</div>
                 </div>
             </div>
@@ -288,7 +300,7 @@
                 <div class="stat-icon" style="background:#f8fafc; color:#64748b;"><i class="fas fa-user-md"></i></div>
                 <div>
                     <div style="color:var(--text-muted); font-size:0.8rem;">Total Doctors</div>
-                    <div style="font-size:1.5rem; font-weight:700;">28</div>
+                    <div style="font-size:1.5rem; font-weight:700;">5</div>
                     <div style="color:var(--success); font-size:0.75rem;">+2 this week</div>
                 </div>
             </div>
@@ -296,15 +308,15 @@
                 <div class="stat-icon" style="background:#eff6ff; color:#3b82f6;"><i class="fas fa-file-medical-alt"></i></div>
                 <div>
                     <div style="color:var(--text-muted); font-size:0.8rem;">Total Scans</div>
-                    <div style="font-size:1.5rem; font-weight:700;">1,482</div>
-                    <div style="color:var(--success); font-size:0.75rem;">+56 this week</div>
+                    <div style="font-size:1.5rem; font-weight:700;">40</div>
+                    <div style="color:var(--success); font-size:0.75rem;">+10 this week</div>
                 </div>
             </div>
             <div class="card stat-card fade-reveal">
                 <div class="stat-icon" style="background:#fee2e2; color:#ef4444;"><i class="fas fa-bell"></i></div>
                 <div>
                     <div style="color:var(--text-muted); font-size:0.8rem;">Positive Cases</div>
-                    <div style="font-size:1.5rem; font-weight:700;">142</div>
+                    <div style="font-size:1.5rem; font-weight:700;">28</div>
                     <div style="color:var(--danger); font-size:0.75rem;">+9 this week</div>
                 </div>
             </div>
@@ -316,13 +328,14 @@
                 <div class="card fade-reveal">
                     <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:1rem;">
                         <h3>System Overview</h3>
+                        <div style="height:300px;">
+    <canvas id="systemOverviewChart"></canvas>
+</div>
                         <select style="border:none; color:var(--text-muted); background:transparent; font-size:0.8rem; cursor:pointer; outline:none;">
                             <option>Last 7 Days</option>
                         </select>
                     </div>
-                    <div style="height: 250px; display:flex; align-items:center; justify-content:center; background:#f8fafc; border-radius:8px; border:1px dashed var(--border);">
-                        <span style="color:var(--text-muted); font-size:0.85rem;">[Area Chart Placeholder]</span>
-                    </div>
+                    
                 </div>
 
                 <div class="card fade-reveal">
@@ -358,7 +371,7 @@
                     <div style="height: 200px; display:flex; align-items:center; justify-content:center; background:#f8fafc; border-radius:8px; border:1px dashed var(--border);">
                         <div style="text-align:center;">
                             <div style="width: 120px; height: 120px; border-radius: 50%; border: 15px solid #10b981; border-top-color: #f59e0b; border-right-color: #ef4444; margin:0 auto; display:flex; align-items:center; justify-content:center; font-weight:bold; font-size:1.2rem;">
-                                1,482
+                                40
                             </div>
                             <span style="color:var(--text-muted); font-size:0.75rem; display:block; margin-top:8px;">Total Scans</span>
                         </div>
@@ -420,6 +433,113 @@
         }, 100);
     });
 </script>
+<script>
+const ctx =
+document.getElementById(
+'bilirubinChart'
+);
 
+if (ctx) {
+new Chart(ctx, {
+    type: 'bar',
+    data: {
+        labels: [
+            'Mon',
+            'Tue',
+            'Wed',
+            'Thu',
+            'Fri',
+            'Sat',
+            'Sun'
+        ],
+        datasets: [{
+            label:
+            'Daily Scans',
+            data: [
+                12,
+                18,
+                25,
+                15,
+                30,
+                22,
+                28
+            ]
+        },
+        {
+            label:
+            'Positive Cases',
+            data: [
+                3,
+                5,
+                7,
+                2,
+                8,
+                6,
+                5
+            ]
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+}
+</script>
+<script>
+const overviewCtx =
+document.getElementById(
+'systemOverviewChart'
+);
+
+if (overviewCtx) {
+new Chart(
+overviewCtx,
+{
+    type: 'line',
+    data: {
+        labels: [
+            'Jan',
+            'Feb',
+            'Mar',
+            'Apr',
+            'May',
+            'Jun'
+        ],
+        datasets: [{
+            label:
+            'User Growth',
+            data: [
+                20,
+                35,
+                52,
+                70,
+                95,
+                120
+            ],
+            tension: 0.4,
+            fill: true
+        },
+        {
+            label:
+            'Total Scans',
+            data: [
+                40,
+                68,
+                95,
+                150,
+                220,
+                310
+            ],
+            tension: 0.4
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false
+    }
+});
+}
+</script>
 </body>
 </html>

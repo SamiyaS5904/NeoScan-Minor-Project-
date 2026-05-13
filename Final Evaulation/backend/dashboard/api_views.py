@@ -121,7 +121,7 @@ def predict_bilirubin(request):
             "traceback": traceback.format_exc()
         }, status=400)
 
-from .chatbot import generate_chat_response
+from .chat import generate_chat_response
 
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
@@ -148,25 +148,32 @@ def calibrate_lighting(request):
             "message": str(e)
         }, status=400)
 
+
 @api_view(['POST'])
 @permission_classes([IsAuthenticated])
 def chat_with_neobot(request):
     try:
         user_message = request.data.get('message')
         history = request.data.get('history', [])
-        
+
         if not user_message:
-            return Response({"status": "error", "message": "No message provided"}, status=400)
-            
-        api_key = request.data.get('api_key')
-        bot_reply = generate_chat_response(user_message, history, api_key)
-        
+            return Response({
+                "status": "error",
+                "message": "No message provided"
+            }, status=400)
+
+        bot_reply = generate_chat_response(user_message)
+
         return Response({
             "status": "success",
             "reply": bot_reply
         })
+
     except Exception as e:
-        return Response({"status": "error", "message": str(e)}, status=400)
+        return Response({
+            "status": "error",
+            "message": str(e)
+        }, status=400)
 
 
 from .models import PatientSetting
